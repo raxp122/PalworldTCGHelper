@@ -1,0 +1,2088 @@
+Palworld Official Card Game
+
+Comprehensive Rules ver. 1.01
+Last Update: November 2, 2026
+Table of Contents
+1. Overview of the Game
+2. Card Information
+3. Information Associated to Players
+4. Zones
+5. Specific Actions
+6. Setting Up the Game
+7. Game Progression
+8. Main Phase Processes
+9. Battle
+10. Play and Resolve Cards and Abilities
+11. Rule Action
+12. Keywords and Keyword Abilities
+13. Miscellaneous
+
+Pg
+1
+2
+3
+4
+5
+7
+7
+8
+8
+9
+13
+14
+15
+
+Rules
+1. Overview of the Game
+1.1 Number of Players
+1.1.1 This game is played by two players. These
+comprehensive rules do not apply to games
+played by any number of players other than
+two.
+1.2 Winning and Losing
+1.2.1 If any player loses, then the game ends
+immediately. If you do not lose and your
+opponent does, then you win the game.
+1.2.1.1 If a player’s life (3.2) is 0 or below, then
+he or she fulfills a losing condition
+(11.3.1).
+1.2.1.2 If a player has no cards in their deck
+(4.5), then he or she fulfills a losing
+condition (11.3.2).
+1.2.2 If all players lose simultaneously, then the
+game ends in a draw.
+1.2.3 Any player may declare their concession at
+any time. The player who declared their
+concession immediately loses without
+proceeding to the check timing (10.5.1), and
+the game ends.
+1.2.3.1 No effects can interfere with conceding.
+No effects can force a player to
+concede, and no effects can replace
+losing the game with a concession.
+1.2.4 There are cards with effects that have a
+player win or lose the game. In these cases,
+that player wins or loses while resolving the
+effect without proceeding to the check timing
+(10.5.1), and the game ends.
+1.3 Golden Rules of the Game
+1.3.1 If the comprehensive rules and the text of a
+card contradict with each other, then the text
+takes precedence.
+
+1.3.2 If anything attempts to make a player do
+something he or she cannot perform, then
+nothing happens. If anything attempts to
+make a player do something he or she can
+only partially perform, then the player only
+performs the part that he or she can.
+1.3.2.1 If anything attempts to turn a game state
+into a state that it is already in, then it
+does not become the state again, and
+that action never happens.
+1.3.2.2 If there is any attempt to perform a
+certain action zero or a negative number
+of times, then nothing happens. No
+reverse action will take place even if it is
+a negative number of times. Likewise, if
+the number used as the basis for
+performing an action is zero, that action
+is not performed.
+1.3.2.2.1 If an action other than addition or
+subtraction must be performed
+using a negative value as its basis,
+treat that value as 0 when
+performing that action.
+1.3.2.3 If multiple effects require a player to
+perform a certain action, and it is
+impossible to satisfy all of the
+requirements, the player must choose
+and perform the action that satisfies as
+many of the requirements as possible.
+1.3.2.4 Any numerical values associated with
+players or cards can be 0 or negative,
+unless any upper or lower limits are
+specified.
+1.3.3 If an effect from a card attempts to do
+something, and at the same time an effect
+from a card restricts the action from taking
+place, then the effect that restricts the action
+takes precedence.
+1.3.4 If more than one player is required to make a
+decision at the same time, the turn player
+makes the choice first. The non-turn player
+will make their choice after knowing the
+decision made by the turn player.
+1.3.4.1 If an effect applies to both players and
+requires the execution of a series of
+multiple actions, any actions that do not
+involve choices are performed
+simultaneously, while actions that
+involve choices are performed starting
+with the turn player.
+1.3.4.2 If more than one player is to make a
+choice of cards in a hidden zone at the
+same time, the turn player first chooses
+the required number of cards without
+checking their information, followed by
+the non-turn player choosing the
+required number of cards. If the chosen
+cards are to be revealed, it is done after
+both players have made their choices.
+1.3.5 If anything asks a player to choose a number,
+then you must choose zero or a positive
+integer, if not specified. You cannot choose
+any fractions or negative numbers.
+
+1.3.5.1 If a number is specified for the upper
+limit in a form such as “up to X”, unless a
+number is specified for the lower limit,
+you can choose zero.
+2. Card Information
+
+Pal
+
+Gear
+
+Structure
+
+Event
+① Name
+② Card Type
+③ Type
+④ Element
+⑤ Work Suitability
+⑥ Color
+⑦ Cost
+⑧ Power
+
+⑨ Strike
+⑩ Lucky Icon
+⑪ Quick Icon
+⑫ Card Text
+⑬ Art
+⑭ Flavor
+⑮ Collection Data
+⑯ Trait
+
+2.1 Name
+2.1.1 The inherent name to identify a card.
+2.1.2 Card names may be referenced during deck
+construction (6.1.1.2).
+2.1.3 Card names may be separated into main
+name and sub name.
+2.1.3.1 If a card name has an em dash (–) and a
+space before and after it, the text before
+
+it is the main name, and the text after it
+is the sub name.
+2.1.3.2 If a card name does not match the
+above, that card does not have a main
+name or a sub name.
+2.1.4 In text, the card’s name itself or a name
+included as part of the card’s name such as
+the main name, may be expressed as 《
+(name)》, depending on context.
+2.1.5 A card name may be added to a card by a
+card effect or other means. In such a case,
+that card possesses both its printed card
+name and the added card name
+simultaneously.
+2.2 Card Type
+2.2.1 The information about the type of a card.
+2.2.2 Cards can have five different types: Pal,
+Structure, Gear, Event, and Soul.
+2.2.2.1 Cards with the “Pal” card type refer to
+creatures that you can deploy to your
+base to assist yourself or attack your
+opponent.
+2.2.2.1.1 Cards with the “Pal” card type have
+their type printed as “Pal”.
+2.2.2.1.2 Cards with the “Pal” card type and
+the “Lucky” (2.4.1.2) subtype are
+considered to have the card type
+“Pal” and also “Lucky Pal”
+simultaneously.
+2.2.2.1.3 Cards with the “Pal” card type and
+the “Normal” (2.4.1.1) subtype are
+considered to have the card type
+“Pal” and also “Normal Pal”
+simultaneously.
+2.2.2.2 Cards with the “structure” card type refer
+to cards you can deploy to your base to
+assist yourself or your Pals.
+2.2.2.3 Cards with the “gear” card type refer to
+cards you can deploy to your base to
+assist your Pals.
+2.2.2.4 Cards with the “event” card type are
+single use cards that generate individual
+effects.
+2.2.2.5 Cards with the “soul” card type refer to
+cards that are used when performing
+various actions during the game.
+2.3 Trait
+2.3.1 The information about the trait that the card
+may have.
+2.3.2 Traits have no particular meaning in terms of
+rules, but can be referenced by other abilities
+or effects.
+2.4 Type
+2.4.1 The information about the subtype that the
+card has.
+2.4.1.1 If this field shows “normal Pal”, it means
+that the card’s subtype is “normal”.
+2.4.1.2 If this field shows “lucky Pal”, it means
+that the card’s subtype is “lucky”.
+2.5 Element
+2.5.1 The information about the element that the
+card has.
+
+2.5.2 The elements are displayed with icons.
+
+
+Neutral
+
+
+Fire
+
+
+Water
+
+
+Ground
+
+
+Grass
+
+
+Ice
+
+
+Electric
+
+
+Dark
+
+2.12 Quick Icon
+2.12.1This icon indicates that the card may be
+played in specific timings, or the ability may
+be played in specific timings..
+
+
+Dragon
+
+2.5.2.1 Neutral element (
+) means that the
+card possesses the "Neutral" element. It
+does not mean that the card has no
+element.
+2.6 Work Suitability
+2.6.1 This indicates the type of work that this card
+is suitable for.
+2.6.2 If a card’s ability or effect contains a name
+enclosed in 「」 (corner brackets) or “” (double
+apostrophe), it indicates the work suitability
+corresponding to that name.
+2.7 Color
+2.7.1 The color of a card.
+2.7.2 The color of a card is either red, blue, green
+or purple.
+2.7.2.1 The color of a card will be indicated by
+the background color of its cost (2.8).
+2.7.3 Some cards are shown as colorless. This
+means that they have no colors assigned to
+them and does not mean that they have
+colorless as their color.
+2.8 Cost
+2.8.1 The cost required to play a card (10.6.2.3).
+2.8.2 If text contains a number enclosed in ◇, it
+refers to either a card’s cost or a value used
+to modify a card’s cost, depending on the
+context.
+2.9 Power
+2.9.1 This value indicates the damage this Pal
+deals to other Pals and structures, and
+whether it can remain on the base after
+receiving damage from other sources.
+2.9.2 Power may be represented by the
+icon
+within the text.
+2.9.3 If the card type is “structure”, the power will
+be referred to as “durability”.
+2.9.3.1 Durability may be represented by the
+icon within the text.
+2.10 Strike
+2.10.1This value indicates the damage this Pal
+deals to a player.
+2.10.1.1
+Strike may be represented by
+the
+
+icon within the text.
+
+2.11 Lucky Icon
+2.11.1This icon is referenced to determine damage
+dealt to a player.
+
+2.13 Card Text
+2.13.1The information about a card’s inherent
+abilities.
+2.13.2Some cards have text in ( ) (brackets) to
+indicate an explanation of an ability. This is
+called reminder text. Reminder text is part of
+the text, but as it is only for explanatory
+purposes, it does not affect the game.
+2.14 Art
+2.14.1The descriptive image of this card.
+2.14.2Art has no meaning in terms of rules.
+2.15 Flavor
+2.15.1The descriptive text of this card.
+2.15.2The flavor has no meaning in terms of rules.
+2.16 Collection Data
+2.16.1The card’s collection number, artist’s name,
+copyright, and other contents of the card with
+no direct relation to game that have not been
+mentioned thus far are collectively called the
+“collection data”.
+2.16.2The collection data is not part of the
+information of this card and generally has no
+meaning in terms of rules.
+2.17 Notation of Information
+2.17.1If a card’s ability or effect refers to a card by
+specifying certain information of the card, it
+refers to any card that has the information
+specified.
+For example, “gear or red structure” refers
+to a gear card or a red structure card and “
+or less structure” refers to structure
+cards with a cost of 6 or less.
+
+3. Information Associated to Players
+3.1 Owner and Master
+3.1.1 The owner is the player who owns the card.
+The owner of a card is the player who had it
+in their deck at the beginning of the game. At
+the end of each game, each player retrieves
+each card that he or she owns.
+3.1.2 The master is the player who is currently
+using a card, ability, or effects. The master of
+a card in a zone is the player whom the zone
+belongs to.
+3.1.2.1 The master of a continuous ability is the
+master of the card that has that ability, or
+the master of an effect that created that
+ability.
+3.1.2.2 The master of an activated ability is the
+player who played it.
+3.1.2.3 The master of an automatic ability is the
+master of the card that has that ability, or
+the master of an effect that created that
+ability.
+
+3.1.2.4 The master of an effect is the master of
+the ability that generated that effect.
+3.1.2.4.1 If an effect instructs for any actions
+to be performed without specifying
+a player, the master of that effect
+carries out those instructions.
+3.2 Life and Damage Taken
+3.2.1 Each player has a numerical information
+called life.
+3.2.1.1 There is no upper limit to life. During the
+game, a player's life can exceed the
+initial value by gaining additional life.
+3.2.1.2 While there is no lower limit to life, if
+referencing values lower than 0 life, that
+value is referenced as 0.
+3.2.1.3 Each player’s life count is public
+information; both players can always
+check each other’s life value.
+3.2.2 Each player has numerical information called
+damage taken.
+3.2.2.1 If a player receives damage (5.14.2)
+during the game, the value of damage
+taken increases.
+3.3 Resource
+3.3.1 Each player has resource information.
+3.3.1.1 The resource information consists of the
+resource name and the number of each
+resource.
+3.3.1.2 Each player may hold multiple
+resources.
+3.3.1.2.1 In the current game, each player
+may hold the following resources.
+⬥ Material (may also be represented
+⬥
+
+by
+)
+Ingredient (may also be
+
+represented by
+)
+3.3.2 Resources are managed according to the
+resource names.
+3.3.2.1 If a value refers to a resource name, it
+refers to the number of that particular
+resource you own.
+3.3.3 The number of resources owned has to be 0
+or more.
+3.3.3.1 If the number of resources owned falls
+below 0, it becomes 0 instead.
+3.3.3.2 If you are required to consume a specific
+resource (5.13) and you own fewer than
+the required number for that resource,
+the consumption cannot be performed.
+3.3.4 During the game, each player’s resources are
+public information, and both players can
+confirm each other’s resource values at any
+time.
+4. Zones
+4.1 Zones Basics
+4.1.1 Each player has their own individual zone
+unless otherwise specified.
+4.1.2 There are zones where all players may see
+the information of the cards in that zone, and
+zones where they may not. Zones in which
+information of the cards in that zone may be
+
+seen are “public zones”, and zones in which
+either or all players may not are called
+“hidden zones”.
+4.1.2.1 When a card is placed in a public zone,
+it is placed in the public state (4.2.2).
+When a card is placed in a hidden zone,
+it is placed in the hidden state (4.2.3).
+4.1.2.2 All players may check the number of
+cards in any zone at any time,
+regardless of whether the zone is public
+or hidden.
+4.1.3 There are zones where the order cards are
+placed in the zone is controlled. If the order is
+controlled, the order the cards are stacked on
+each other is controlled. Unless otherwise
+specified, players cannot change the order of
+cards in a zone where the order is controlled.
+4.1.4 When a card moves from a base to a
+non-base area, unless otherwise specified, it
+is considered as a new card in the new zone.
+Effects that applied in the previous zone do
+not continue to apply.
+4.1.5 When multiple cards are placed in a zone at
+the same time, unless otherwise specified,
+the order they are placed in the new zone is
+decided by the owner of that zone.
+4.1.5.1 When multiple cards are placed from a
+public zone into a hidden zone at the
+same time, and the master of those
+cards can determine the order those
+cards are placed, no player other than
+the master may know the order those
+cards are placed.
+4.1.6 If a card belonging to a player is instructed to
+move to a zone that is not specified, it moves
+to the zone belonging to that card’s master,
+unless otherwise specified.
+4.2 Zone Visibility State
+4.2.1 Cards in zones have either the public state or
+hidden state.
+4.2.2 All players may see the information of cards
+in the public state.
+4.2.3 Some or all players may not see the
+information of cards in the hidden state.
+4.3 Card Placement State
+4.3.1 It is possible for the card placement state to
+be specified in some zones. The placement
+state is the orientation state of the card.
+4.3.2 The orientation state can either be the “stand
+state” or the “rest state”. Cards can only have
+one of the two orientation states, and cannot
+be in both or neither of the states.
+4.3.2.1 Cards in the stand state are placed with
+their card name being vertically upright
+from its master’s viewpoint.
+4.3.2.2 Cards in the rest state are placed with
+their card name being horizontal from its
+master’s viewpoint.
+4.3.2.3 When a card is placed in a zone where it
+is possible for the placement state to be
+
+specified, unless otherwise specified, it
+is placed in the stand state.
+4.4 Base
+4.4.1 Base is the area where Pals, structures and
+gears are deployed and used.
+4.4.2 The base is a public zone, the cards in this
+zone have directions as placement states.
+The order of the cards in the base is not
+fixed.
+4.4.3 If a rule, ability or effect refers to a “Pal”
+(including “Lucky Pal” or “Normal Pal”),
+“Structure” or “Gear” without specifying a
+zone, it refers to a card of that type in the
+base.
+4.4.4 Each Pal or structure at the base has
+numerical information called “damage taken”.
+4.4.5 Each player has a numerical information
+called maximum number of Pals.
+4.4.5.1 If the number of Pals played exceeds the
+Pal limit, the extra Pals are sent to the
+graveyard by rule action (11.5).
+4.4.5.2 The Pal limit at the start of the game is
+5.
+4.5 Deck Zone
+4.5.1 The zone you put your deck in at the
+beginning of a game.
+4.5.2 The deck zone is a hidden zone, and the
+order of the cards is controlled. Players can
+only change the order of the cards in the
+deck, or check the information of those cards,
+if an effect or rule instructs them to.
+4.6 Hand
+4.6.1 The zone where each player places their
+unused cards without letting the opponent
+see them.
+4.6.2 The hand is a hidden zone, but you can see
+information about the cards in your hand. You
+may not see information about cards in your
+opponent’s hand. The order of the cards in
+the hand is not controlled.
+4.6.3 “(number) cards from the cards in your hand”
+is written as “(number) cards from your hand”
+in card text.
+4.7 Graveyard
+4.7.1 The zone where each player places cards
+that have been used.
+4.7.2 The graveyard is a public zone. Cards in this
+zone are stacked face up, and the
+information of cards are open to all players.
+The order of the cards in the graveyard is not
+controlled.
+
+4.8
+
+Soul Deck
+
+4.8.1 The area where you place the soul cards you
+prepared at the beginning of the game.
+4.8.2 While the soul deck is a public zone, it is not
+necessary to place the cards face up. The
+order of cards in this zone is not tracked.
+4.9 Soul Area
+4.9.1 The area where your souls are placed.
+4.9.2 The soul area is a public zone. The cards in
+this area have orientation. The order of cards
+in this zone is not tracked.
+4.10 Exile Zone
+4.10.1The zone where cards removed from the
+game are placed.
+4.10.2The exile zone is a public zone where the
+order of the banished cards is not controlled.
+4.11 Resolution Zone
+4.11.1The zone where cards are put temporarily
+while resolving ability effects as the game
+progresses. There is only 1 resolution zone,
+shared and used by both players.
+4.11.2The resolution zone is a public zone and the
+order of the cards are controlled.
+4.12 Set Area
+4.12.1The zone where cards that have been
+instructed to be "put underneath" another
+card (5.22) are placed as the game
+progresses.
+4.12.2The set area is a hidden zone, but you can
+see the information of cards in your set area.
+You may not see information about cards in
+your opponent's set area. The order of the
+cards in the set area is not controlled. Also, if
+a card is placed in this area in the face up
+state, all players may see the information of
+that card.
+4.12.3Cards in the set area are generally placed
+while associated with another card.
+4.12.3.1
+If the card that a card in the set
+area is associated with no longer exists,
+that card in the set area is put into the
+graveyard (11.6).
+5. Specific Actions
+5.1 Overview
+5.1.1 Specific actions are states or instructions of
+actions that have a special meaning when
+playing this game.
+5.2 Stand/Rest
+5.2.1 When instructed to “stand” or “rest” a card,
+change the orientation of the specified card to
+the stand state or rest state in accordance
+with the instruction.
+5.3 Specific States
+5.3.1 During a game, there may be a state with a
+specific name that all players reference
+
+simultaneously. This is called a “specific
+state”.
+5.3.1.1 The current list of specific states in rules
+is as below.
+⬥ Night
+5.3.2 “It becomes (specific state)” means the game
+enters that specific state.
+5.3.3 “It is (specific state)” means the game is
+currently in the specific state.
+5.3.4 “If it is (specific state)” means the condition is
+met if the game is currently in the specific
+state.
+5.4 Place
+5.4.1 When instructed to “place” a card into a
+specified zone, move that card to that zone.
+5.5 Exile
+5.5.1 When instructed to “exile” a card, place the
+card in the exile zone.
+5.6 Shuffle
+5.6.1 When instructed to “shuffle” the deck, the
+player who owns the deck randomly changes
+the order of the cards in that deck.
+5.6.1.1 When instructed to shuffle a deck that
+has 0 cards or 1 card, the order of the
+cards in that deck is not changed, but
+the cut is considered to have been
+performed.
+5.7 Drawing Cards
+5.7.1 When instructed to “draw 1” card, the
+specified player moves the top card of the
+deck to the specified player’s hand.
+5.7.2 When instructed to “draw (number)” cards,
+the specified player repeats the action to
+draw 1 card (number) times.
+5.7.3 When instructed to “draw up to (number)”
+cards, the specified player does the following.
+5.7.3.1 If (number) is less than 0, nothing is
+done and this resolution ends.
+5.7.3.2 The specified player can end the
+performing of this instruction.
+5.7.3.3 The specified player draws 1 card.
+5.7.3.4 If 5.7.3.3 has been performed (number)
+of times, this action ends. Otherwise,
+return to 5.7.3.1.
+5.8 Look at Cards from the Top of the Deck
+5.8.1 When instructed to “look at the top (number)
+cards of the deck”, the specified player can
+check the information of the top (number)
+cards of that deck.
+5.8.2 When instructed to “look at up to (number)
+cards from the top of the deck”, perform the
+following steps.
+5.8.2.1 If (number) is 0 or less, nothing is done
+and this action ends.
+5.8.2.2 Specify 1 as the number of cards.
+5.8.2.3 The specified player can end the
+performing of this instruction.
+5.8.2.4 The specified player can check the
+information of the card that is part of the
+
+specified number of cards from the top
+of the deck.
+5.8.2.5 If the number of times 5.8.2.4 has been
+performed for this instruction has
+reached (number) times, the
+performance of this instruction ends. If it
+has not, increase the number of times
+performed by 1 and return to 5.8.2.3.
+5.9 Look at the Deck and Choose
+5.9.1 If a player is instructed to “look and choose” a
+specific card from a deck or a specified range
+of cards within a deck, that player looks at the
+cards in the specified range, chooses the
+specified card(s) and separates them from
+the rest of the deck.
+5.9.1.1 If a card is specified with conditions
+other than the number of cards, reveal it
+to all players after selection to confirm it
+meets the conditions.
+5.9.1.2 If a card is specified with conditions
+other than the number of cards and
+there is no guarantee that the card is
+present in the specified range, even if it
+is, it may be treated as if it is not present
+intentionally.
+5.9.1.3 If the condition is only the number of
+cards, choose all cards in the specified
+range if there are fewer than the
+required number. Otherwise, choose the
+required number of cards from the
+specified range. There cannot be no
+selections made in any case.
+5.10 Discard
+5.10.1When instructed to “discard” a card, move the
+card to that owner’s graveyard.
+5.10.2When instructed to “discard” a card without
+specifying the zone, discard from the player’s
+hand.
+5.11 Exchange
+5.11.1When instructed to “exchange” a card with
+another card, move the former card to the
+latter card’s zone and the latter card to the
+former’s card zone simultaneously.
+5.11.2If either of the cards is unable to move to the
+other’s zone at the point of performing the
+instruction to exchange for any reason, that
+instruction is not performed.
+5.12 Soul Cost Indication
+5.12.1Numbers with shapes (e.g.
+) from the card
+text indicates the soul cost or change in soul
+cost of that card.
+5.12.1.1
+If the soul cost is used to
+reference a card’s information, it refers
+to that card’s cost (2.8).
+5.12.1.2
+If the soul cost value is indicated
+on its own with a circled number as part
+of the activated ability (10.4.1), it refers
+to the value of the soul cost required
+(10.4.3).
+E.g.: “
+
+[②] Draw 1 card" means
+
+playing an activated ability by paying 2
+souls as the cost.
+5.13 Consume
+5.13.1When instructed to “consume” a specified
+amount of a specific resource (3.3), that
+player reduces the specific resource they
+own by the specified amount.
+5.14 (Dealing) Damage
+5.14.1If a Pal or structure at the base is instructed
+to take “(number) damage” or “is dealt
+(number) damage”, increase the amount of
+damage taken by that Pal or structure by
+(number).
+5.14.2If a player is instructed to take “(number)
+damage” or “is dealt (number) damage”,
+increase the amount of damage taken (3.2.2)
+by that player by (number).
+5.14.3Damage may be represented by the
+icon within the text.
+5.15 Deploy
+5.15.1“To deploy” is a specific action to move a Pal,
+structure, or gear from anywhere that is not a
+base to any base.
+5.15.2When instructed to “deploy” a Pal, structure
+or gear card, move it to the base.
+5.15.2.1
+If the instruction does not
+specify which player’s base the card will
+be deployed to, it is deployed in the base
+of the player who is the master of the
+effect.
+5.16 Butcher
+5.16.1When a player is instructed to “butcher” a Pal
+and that player is the Pal’s master, move the
+Pal to the player’s graveyard.
+5.16.2When a player is instructed to “butcher a Pal”
+without specifying a particular Pal, that player
+butchers the specified number of pals that
+meet the conditions stated, out of the Pals he
+or she owns.
+5.17 Assign
+5.17.1If a Pal is “assigned” to a structure, perform
+the following.
+5.17.1.1
+If the Pal is in rest state, it
+cannot be assigned.
+5.17.1.2
+Put that Pal in rest state. This
+causes the Pal to be “assigned” to the
+structure and the structure to have the
+Pal “assigned” to it.
+5.17.2When instructed to “assign a Pal”, without
+specifying a particular Pal, select a Pal in
+stand state you own that meets the specified
+conditions, and assign it.
+5.17.3If a structure’s ability or effect instructs you to
+assign a Pal without specifying a particular
+structure, assign it to that structure.
+5.18 Attack Failure
+5.18.1If there is an instruction to “nullify the attack”
+while there is an attacking Pal (9.3.2.1), after
+resolving the effect that caused that
+
+instruction, move to the end of battle step
+(9.7) immediately.
+5.19 Declaring (a card name, etc)
+5.19.1When "declaring" a card name, main name,
+or sub-name of any card during a game, a
+player declares a card name, main name, or
+sub-name of any existing card or card that
+exists in the game.
+5.20 Same Name / Different Card Name
+5.20.1A card having the "same name" as another
+card means that both cards possess a
+common card name.
+5.20.1.1
+If any card has multiple card
+names, they are cards with the same
+name if any one of those names is
+common to each other.
+5.20.2A card having a "different card name" from
+another card means that those respective
+cards do not have the same name.
+5.21 (An Automatic Ability) Activates [X] Times
+5.21.1If an effect stating an automatic ability
+"activates (number) times" is applied to that
+automatic ability, when the trigger condition of
+that automatic ability is met, the automatic
+ability enters the pending state (number)
+times instead of entering the pending state
+once.
+5.21.2If multiple such processes are applied to a
+single automatic ability, the master of that
+automatic ability chooses and applies only
+one of those processes.
+5.22 Put Underneath (This Card)
+5.22.1When there is an instruction for a card to be
+"put underneath" a card in the base, move
+the card being put underneath to the set
+area, and associate it with that card in the
+base.
+5.22.1.1
+When there is an instruction to
+"put face down underneath" a card in the
+base, the moved card is placed in the
+set area in a face-down state.
+5.22.1.2
+When there is an instruction to
+"put face up underneath" a card in the
+base, the moved card is placed in the
+set area in a face up state.
+6. Setting Up the Game
+6.1 Preparing the Decks
+6.1.1 Each player prepares a main deck with their
+own cards before the game.
+6.1.1.1 The main deck must be constructed of
+exactly 50 cards.
+6.1.1.2 The main deck must have 4 or less
+cards with the same card name between
+them.
+6.1.1.3 The main deck may include up to a total
+of 8 cards with the lucky icon (2.11).
+6.1.2 Each player prepares the upper limit number
+of soul cards allowed.
+
+6.1.2.1 The upper limit of each player’s souls at
+the beginning of the game is 10.
+6.1.3 Continuous abilities regarding deck
+construction are applied as replacement
+effects that change the deck construction
+rules above. Those abilities are inactive
+(10.3.2) after the game starts.
+6.2 Preparing for the Game
+6.2.1 Before the start of a game, players perform
+the following steps.
+6.2.1.1 Present the main deck you will use for
+this game to your opponent.
+6.2.1.2 Each player puts their main deck in their
+deck zone, and shuffles it.
+6.2.1.3 Randomly determine a player, and that
+player chooses which player goes first.
+6.2.1.4 Each player puts all of their soul cards
+into the soul deck area.
+6.2.1.5 The player going second puts 1 card
+from their soul deck into their soul area.
+6.2.1.6 Each player draws 5 cards from their
+deck, which forms the initial hand.
+6.2.1.7 Starting from the player going first, each
+player may declare if they are redrawing
+their hand. If they do, that player returns
+all of the cards from their hand to their
+deck, shuffles it, and then draws 5 cards
+from the top of their deck for their hand.
+6.2.1.7.1 Each player may only declare and
+perform this action once per game.
+6.2.1.8 Each player sets their life to 10.
+6.2.1.9 Each player sets their damage (3.2.2) to
+0.
+6.2.1.10
+Each player sets their resources
+(3.3) to 0.
+6.2.1.11The player going first becomes the
+active player, and the game begins.
+7. Game Progression
+7.1 Overview
+7.1.1 The game progresses by repeating steps
+known as “turns”. During a turn, one player is
+the turn player, while the other is the non-turn
+player.
+7.1.2 The turn player performs each of the phases
+from stand phase (7.2) to end phase (7.6) in
+the order shown.
+7.2 Stand Phase
+7.2.1 The turn player stands all of the cards in their
+base and soul area.
+7.2.2 Trigger conditions “at the beginning of turn”
+and “at the beginning of stand phase” are
+fulfilled. Also, if this is the first turn of the
+game, trigger condition “at the beginning of
+the game” is fulfilled.
+7.2.3 A check timing occurs. After all the processes
+for that check timing have been completed,
+proceed to draw phase.
+7.3 Draw Phase
+7.3.1 The player who goes first skips the draw
+phase, and proceeds to the soul phase.
+
+7.3.2 Trigger condition “at the beginning of draw
+phase” is fulfilled, and a check timing occurs.
+7.3.3 The turn player draws a card.
+7.3.4 A check timing occurs. After all the processes
+for that check timing have been completed,
+proceed to soul phase.
+7.4 Soul Phase
+7.4.1 Trigger condition “at the beginning of soul
+phase” is fulfilled, and a check timing occurs.
+7.4.2 The turn player adds the number of soul
+cards to increase specified by the game from
+their soul deck to their soul area.
+7.4.2.1 The number of souls to increase that is
+set at the beginning of a game is 2.
+7.4.2.2 If the number of cards in your soul deck
+is less than the number of souls to
+increase, move all of the cards from your
+soul deck into the soul area.
+7.4.3 A check timing occurs. After all the processes
+for that check timing have been completed,
+proceed to the main phase.
+7.5 Main Phase
+7.5.1 Trigger condition “at the beginning of main
+phase” is fulfilled, and a check timing occurs.
+7.5.2 The turn player gets a play timing. During this
+play timing, the turn player can do any of the
+actions stated in “8. Main Phase Processes”.
+7.5.2.1 In this play timing, if the turn player is the
+master of a Pal that has to “attack as
+many times as possible”, and that Pal is
+able to perform an attack (9.2.2), the
+turn player cannot choose to do nothing
+to end this play timing.
+7.5.3 If the turn player declares to do nothing else,
+proceed to the end phase.
+7.6 End Phase
+7.6.1 Trigger condition “at the end of turn”, and
+automatic abilities with this trigger condition
+that have not been fulfilled this turn are
+fulfilled.
+7.6.2 A check timing occurs.
+7.6.3 The damage of all Pals and structures in all
+bases becomes 0.
+7.6.4 All effects that have specified duration of
+“until end of turn” or “during turn” are
+invalidated.
+7.6.5 At this point, if there are no automatic abilities
+and rule action to resolve during the check
+timing as stipulated in 7.6.2, and there are no
+“at the end of turn” trigger conditions or any
+other trigger conditions of automatic abilities
+that have not yet been fulfilled, the opponent
+of the current turn player becomes the turn
+player, and play proceeds to the next turn.
+Otherwise, return to the beginning of the end
+phase again.
+
+8. Main Phase Processes
+8.1 Overview
+8.1.1 This section provides further details about the
+actions the turn player may perform during
+the play timing of their main phase each turn.
+8.1.2 The turn player may perform any of these
+actions any number of times in any order.
+8.2 Playing Cards
+8.2.1 The turn player may choose a card from their
+hand, and play it (10.6.2).
+8.3 Playing Activated Abilities
+8.3.1 The turn player may choose an active
+activated ability (10.3) from their cards, and
+play it (10.6.2).
+8.4 Start a Battle
+8.4.1 If the turn player is the master of a Pal that is
+able to perform an attack (9.2.2), the turn
+player may declare to start a battle, and
+proceed to the attack step (9.3).
+8.5 Pay Souls to Draw a Card
+8.5.1 The turn player may pay 3 souls (10.4.3) to
+draw 1 card.
+8.5.2 This action may only be performed once per
+turn.
+9. Battle
+9.1 Overview
+9.1.1 The turn player may declare to start a battle
+during the main phase, and progress from
+attack declaration step (9.3) to end of battle
+step (9.7) in that order.
+9.2 Suitable Pal and Target for Battle
+9.2.1 To start a battle, a Pal that is able to attack
+and a battle target that that Pal is able to
+attack are needed.
+9.2.2 A suitable Pal that is able to attack is
+determined by the following conditions.
+9.2.2.1 The turn player is the master of that Pal,
+and that Pal must be in the standing
+state.
+9.2.2.2 That Pal must not be in a state where it
+cannot battle due to an effect.
+9.2.2.3 Even if the Pal was deployed in your
+base this turn, it may perform an attack.
+9.2.3 Targets that can be chosen for the attack are
+the non-turn player, or 1 of the structures or
+Pals in the resting state that the non-turn
+player is the master of.
+9.2.4 Based on the conditions above, if 1 Pal that is
+able to attack and 1 attack target can be
+chosen, it is suitable for the turn player to
+start a battle.
+9.2.4.1 Even if 1 Pal and 1 attack target is
+chosen, if that Pal is unable to attack
+that target due to an effect, that
+combination is not a suitable
+combination to start a battle.
+
+9.3 Attack Declaration Step
+9.3.1 The turn player chooses a Pal that is able to
+attack (9.2.2), and a target that that Pal is
+able to attack (9.2.3).
+9.3.1.1 If either of the 2 are not suitable to be
+chosen for any reason, the battle is
+cancelled, and the game reverts to the
+point before the declaration to start a
+battle.
+9.3.2 Rest the chosen Pal. This Pal is now
+considered to have “attacked”, and the attack
+target to have “been attacked”.
+9.3.2.1 From here onwards, this Pal is regarded
+as the “attacking” Pal during this battle.
+9.3.3 A check timing occurs. After all the processes
+for that check timing have been completed,
+proceed to the block declaration step.
+9.4 Block Declaration Step
+9.4.1 Trigger condition “at the beginning of block
+declaration step” is fulfilled, and a check
+timing occurs.
+9.4.2 The non-turn player may choose 1 Pal in the
+standing state that is not an existing attack
+target that they are the master of, and is not
+restricted from blocking an attacking Pal due
+to an effect.
+9.4.2.1 If a Pal is chosen, rest that Pal, and the
+attack target of this attack becomes that
+Pal.
+9.4.3 If the attack target is a Pal, during this battle,
+the attacking Pal and the attack target Pal
+both become each other’s “battle opponent”.
+9.4.4 A check timing occurs. After all the processes
+for that check timing have been completed,
+proceed to the quick step.
+9.5 Quick Step
+9.5.1 Trigger condition “at the beginning of quick
+step” is fulfilled, and a check timing occurs.
+9.5.2 The non-turn player gets a play timing.
+During this play timing, the non-turn player
+can choose to play from their hand, an event
+card, or an activated ability that is active, that
+can be played during this step (12.2.1).
+9.5.2.1 This can be performed any number of
+times in any order.
+9.5.2.2 The turn player cannot activate abilities
+of cards during quick step.
+9.5.3 A check timing occurs. After all the processes
+for that check timing have been completed,
+proceed to the damage step.
+9.6 Damage Step
+9.6.1 Trigger condition “at the beginning of damage
+step” is fulfilled, and a check timing occurs.
+9.6.2 If, for any reason, the attacking Pal or the
+attack target ceases to exist, proceed to
+9.6.4.
+9.6.3 Perform the following depending on the
+attack target.
+9.6.3.1 If the attack target is a Pal, the attacking
+Pal and the attack target Pal both deal
+
+damage equal to their power value to
+each other.
+9.6.3.1.1 At this point, if the Pal’s power is 0
+or less, that Pal does not deal
+damage (1.3.2.2).
+9.6.3.2 If the attack target is a structure, the
+attacking Pal deals damage equal to its
+power value to the attack target.
+9.6.3.2.1 The structure does not deal
+damage to the attacking Pal.
+9.6.3.3 If the attack target is a player, perform
+the following steps.
+9.6.3.3.1 Confirm the attacking Pal’s strike. If
+the strike is 0 or less, nothing
+happens.
+9.6.3.3.2 The attacking Pal deals damage
+(11.2) to the attack target player
+equal to its strike.
+9.6.3.4 Damage that the Pal deals in 9.6.3.1 and
+9.6.3.2 and damage that the attacking
+Pal deals to a player in 9.6.3.3.2 are
+referred to as battle damage.
+9.6.4 A check timing occurs. After all the processes
+for that check timing have been completed,
+proceed to the end of battle step.
+9.7 End of Battle Step
+9.7.1 Trigger condition “at the end of the battle”,
+and automatic abilities with this trigger
+condition that have not been fulfilled this
+battle is fulfilled.
+9.7.2 A check timing occurs.
+9.7.3 All effects that have specified duration of
+“until end of the battle” or “during this battle”
+are invalidated.
+9.7.3.1 From here onwards, the “attacking Pal”
+stops being in the attacking state.
+9.7.4 At this point, if there are no automatic abilities
+and rule action to resolve during the check
+timing as stipulated in 9.7.2, and there are no
+“at the end of the battle” trigger conditions or
+any other trigger conditions of automatic
+abilities that have not yet been fulfilled this
+battle, this battle ends, and returns to the play
+timing (10.5.4) of the main phase of the turn
+player. Otherwise, return to the beginning of
+the end of battle step again.
+10. Play and Resolve Cards and Abilities
+10.1 Categories of Abilities
+10.1.1Abilities are divided into three categories:
+activated abilities, automatic abilities, and
+continuous abilities.
+10.1.1.1
+Activated abilities refer to
+abilities that can be performed by a
+player with a play timing by paying the
+cost.
+10.1.1.1.1
+On a card, activated abilities
+are written as “
+[(Cost)]
+(Effect)”. Text enclosed by ［］ refers
+to the cost of playing that activated
+ability, followed by text that refers to
+
+the effect that occurs as a result of
+resolving that activated ability.
+10.1.1.1.2
+There are activated abilities
+that have 【Quick】(12.2) at the
+beginning of the ability, which can
+be played during the quick step
+(9.5.2).
+10.1.1.2
+Automatic abilities refer to
+abilities that are automatically played as
+a result of a designated situation that
+occurs during the game.
+10.1.1.2.1
+On a card, automatic abilities
+are written as “
+
+When
+
+(Condition), (Effect)”, or “
+At
+the beginning of (Phase or Step),
+(Effect)” or “At the end of (Phase or
+Step), (Effect)”. The situations
+specified by (Condition) and (Phase
+or Step) are known as “Trigger
+Condition”, and fulfilling a trigger
+condition is known as “triggering
+(that ability)”.
+10.1.1.3
+Continuous abilities refer to
+abilities which remain in effect for the
+specified duration that that ability is in
+effect.
+10.1.1.3.1
+On a card, continuous
+abilities are written as “
+(Effect)”.
+10.2 Categories of Effects
+10.2.1Effects are divided into three categories:
+“one-shot effects”, “continuous effects”, and
+“replacement effects”.
+10.2.1.1
+“One-shot effects” refer to
+effects that resolve by executing that
+action, and ending the effect thereafter.
+For example, effects generated by
+abilities such as “draw a card” or “put
+this card into the graveyard” are
+one-shot effects.
+10.2.1.2
+“Continuous effects” refer to
+effects that remain in effect for a
+specified duration (including “during this
+game”, for effects with no specified
+duration).
+10.2.1.3
+“Replacement effects” refer to
+effects that replace the execution of an
+existing situation during the game with
+the execution of another situation
+instead.
+10.2.1.3.1
+If an ability is written as “if
+(player) would do A, do B instead”,
+the effect generated by that ability is
+a replacement effect.
+10.2.1.3.2
+If an ability is written as “if
+(player) would do A, (player) may
+[Choice] instead”, the effect
+generated by that ability is an
+optional replacement effect.
+10.3 Active Abilities and Inactive Abilities
+10.3.1Some effects make an effect “active” or
+“inactive”. If this is the case, resolve the
+ability as follows.
+
+10.3.2If all or part of an effect becomes inactive
+under a specific condition, under said
+condition, that part exists as an ability, but no
+effects are generated. If that effect required a
+choice to be made, no choice is made.
+10.3.3If all or part of an effect becomes active
+under a specific condition, in the state where
+said condition is not fulfilled, that part is
+inactive.
+10.3.4Abilities with a zone specified are only active
+in the zone specified.
+10.3.4.1
+There are abilities that have the
+zone icon at the beginning of the ability.
+In this case, those abilities are active
+while they are in the zones specified by
+the zone icons.
+10.3.4.1.1
+Abilities with the
+icon
+are active in the hand.
+10.3.5Abilities of a card with a card type “Pal”,
+“Structure”, or “Gear” specified and do not
+have a zone specified are only active if that
+card is in the base.
+10.4 Cost and Paying Cost
+10.4.1Some activated or automatic abilities contain
+an action(s) enclosed within [] at the
+beginning of the text, which are known as the
+cost of that ability.
+10.4.2“Pay the cost” refers to “perform the action(s)
+stipulated in the cost”.
+10.4.2.1
+If there are multiple actions in
+the cost, execute the actions in order,
+starting with the action closest to the
+beginning of the text.
+10.4.2.2
+If the whole cost or part thereof
+cannot be paid, no part of the cost to
+play this ability is paid. You may not pay
+for only part(s) of the cost.
+10.4.3Among the costs, if the cost requires a
+specified number of souls to be paid, change
+the specified number of souls in your soul
+area from standing state to resting state.
+10.5 Check Timing and Play Timing
+10.5.1Check timing refers to the time when rule
+action occurs during the game or an
+automatic ability is played.
+10.5.1.1
+For check timing, all rule actions
+will be resolved first, and when there are
+no longer any rule actions to be
+resolved, automatic abilities with trigger
+conditions fulfilled can be played and
+resolved (10.5.3).
+10.5.2Play timing refers to the time when the
+specified player can perform an action. If a
+player is given a play timing, a check timing
+always occurs before an action can be
+chosen. After all rule actions and automatic
+abilities have been resolved for that check
+timing, that player will be given a play timing.
+10.5.3When a check timing occurs, the game
+advances in the order as follows.
+
+10.5.3.1
+All rule actions that must be
+resolved at this point are simultaneously
+resolved. If, as a result, there are new
+rule actions to be resolved, this step is
+repeated insofar as there are rule
+actions remaining to be resolved.
+10.5.3.2
+If there are automatic abilities in
+a standby condition that the turn player
+is a master of, the turn player chooses 1
+ability from among them, plays and
+resolves it, and returns to 10.5.3.1.
+10.5.3.3
+If there are automatic abilities in
+a Standby Condition that the non-turn
+player is a master of, the non-turn player
+chooses 1 ability from among them,
+plays and resolves it, and returns to
+10.5.3.1.
+10.5.3.4
+The check timing ends.
+10.5.4When a player gets a play timing, the game
+advances in the order as follows.
+10.5.4.1
+A check timing occurs. Resolve
+the check timing.
+10.5.4.2
+Only at this point does that
+player get a play timing. At this point,
+that player executes any action that is
+allowed, or chooses to do nothing. If that
+player executes an action, unless
+otherwise specified, that player gets
+another play timing after this play timing.
+10.5.4.3
+If the player that gets a play
+timing chooses to do nothing, the play
+timing ends, and the phase or step
+proceeds.
+10.6 Playing and Resolving
+10.6.1Activated abilities, automatic abilities, and
+cards in hand need to be played and resolved
+for the effect to occur. Continuous abilities
+are not played, as the effect is always in
+effect.
+10.6.2A player plays a card or an ability as follows.
+10.6.2.1
+The player designates an ability,
+or card in their hand to play, and puts it
+in the resolution zone.
+10.6.2.1.1
+If it is a card in a hidden
+zone, reveal it and put it in the
+resolution zone.
+10.6.2.1.2
+If it is an ability, put it as a
+pseudo card in the resolution zone.
+10.6.2.2
+If the card or ability requires the
+player to make any choices, they make
+that choice.
+10.6.2.2.1
+If the card or ability requires
+the player to make any choices and
+there is a list of choices that follow
+after that, they make that choice
+from the specified number of
+options when playing it. At that
+point, the options that were not
+chosen are regarded as not being in
+effect.
+10.6.2.2.2
+If the value of part of the card
+or ability is outlined as “X”, and the
+way to determine X is not outlined
+
+in that text, the value of that X is
+regarded as 1.
+10.6.2.3
+If there is a cost for the card to
+be played, the player determines the
+cost, and pays the cost in full.
+10.6.2.3.1
+If there are multiple ways to
+pay the cost, the way to pay the
+cost is determined at the point of
+paying the cost.
+10.6.2.4
+Resolution of the card or ability
+occurs.
+10.6.2.4.1
+If what is played is a card,
+and the card type is “Pal” or
+“structure” or “gear”, place that card
+in its master’s base.
+10.6.2.4.2
+If what is played is a card,
+and the card type is “event”,
+perform what is written in that text,
+and subsequently put that card into
+its owner’s graveyard.
+10.6.2.4.3
+If what is played is an
+activated ability or automatic ability,
+perform the effects outlined in that
+ability, and remove that ability from
+the resolution zone.
+10.6.2.4.4
+Even if the card that has the
+activated ability or automatic ability
+is no longer in its original zone for
+any reason, that ability will resolve.
+10.6.3If a card or ability states “choose”, during
+resolution, the player chooses the
+appropriate card(s) or player(s), et cetera,
+(henceforth referred to as “targets”) among
+the choices presented at the point where the
+instruction was given.
+10.6.3.1
+If the number of choices is
+specified, the player must choose as
+many targets as possible up to the
+specified number. If a player can make a
+choice, that player is not allowed to not
+make a choice.
+10.6.3.1.1
+If the number of choices is
+specified by “choose up to”, the
+player may choose any number of
+targets from 0 up to the specified
+number of choices.
+10.6.3.1.2
+If the number of choices is
+specified, but it is impossible to
+make that many choices, the player
+chooses as many targets as
+possible, and applies the relevant
+effects on those targets.
+10.6.3.1.3
+If the number of choices is
+specified, and no targets can be
+chosen, no target is chosen. All
+effects relating to that target are
+ignored.
+10.6.3.1.4
+If there is an instruction to
+execute the text enclosed in 〈〉
+multiple times, and there is an
+action to choose something within
+those 〈〉, you can choose the same
+target for each of those executions.
+10.6.3.1.5
+If the targets are unrevealed
+cards in a hidden zone, and if the
+
+information of the card(s) is
+required to fulfill the condition(s) of
+the choice, it is not guaranteed that
+those cards in the hidden zone
+possess that information. Even if
+there are cards in that zone that
+fulfill the condition(s), the player is
+allowed to not choose those cards.
+10.7 Restriction on Number of Times
+10.7.1There are activated abilities and automatic
+abilities with
+restriction on the
+number of times. These abilities are restricted
+in the number of times they can be played.
+10.7.2If an activated ability has a restriction on the
+number of times, that ability cannot be played
+beyond that number of times of that
+restriction.
+10.7.3If an automatic ability has a limit on the
+number of times it can be played, at the time
+it enters the pending state and is to be
+played, the master of that ability can choose
+not to play it, cancel that instance of the
+pending state, and choose not to count it
+toward the play limit.
+10.8 Resolving Automatic Abilities
+10.8.1Automatic abilities refer to abilities that are
+played during the check timing that occurs as
+a result of fulfilling a specified trigger
+condition(s).
+10.8.2When any automatic ability’s trigger
+condition(s) is fulfilled, that automatic ability
+will enter the standby state.
+10.8.2.1
+When an automatic ability’s
+trigger condition(s) is fulfilled multiple
+times, that automatic ability enters the
+standby state an equal number of times.
+10.8.3At the stage when a check timing occurs, the
+player who wishes to play an automatic ability
+chooses 1 of the automatic abilities in a
+standby state that they are a master of, and
+plays it. After the played ability is resolved, 1
+occurrence of that ability’s standby state is
+extinguished.
+10.8.3.1
+Players must play all automatic
+abilities in the standby state; players are
+not allowed to choose not to play any
+automatic abilities in the standby state.
+However, when an automatic ability that
+the player is a master of enters the
+standby state multiple times, the player
+can choose their order of resolution.
+10.8.3.1.1
+If the player can choose to
+play the automatic ability by paying
+an optional cost, the player can
+choose to not pay the cost, and not
+play that automatic ability.
+10.8.3.2
+If the chosen automatic ability in
+standby state cannot be played for any
+reason, 1 occurrence of that automatic
+ability’s standby state is extinguished.
+10.8.3.2.1
+If an automatic ability can be
+played upon paying a cost, and a
+
+player chooses not to pay the cost,
+and consequently, not play the
+ability, 1 occurrence of that
+automatic ability’s standby state is
+extinguished.
+10.8.4Some cards possess automatic abilities with
+trigger condition(s) that are fulfilled upon
+moving that card to another zone. This is
+known as “zone change trigger condition”.
+10.8.4.1
+Some automatic abilities with
+zone change trigger condition(s) require
+the information of the card that activated
+that ability. In that instance, look up the
+information as follows.
+10.8.4.1.1
+If it is an automatic ability that
+requires information from a card
+when the card is moved from a
+public zone to a hidden zone, or
+from a hidden zone to a public
+zone, use the information available
+when said card is/was in the public
+zone.
+10.8.4.1.2
+If it is an automatic ability that
+requires information from a card
+when the card is moved from the
+base to a zone other than the base,
+use the information available when
+said card was on the base.
+10.8.4.1.3
+If it is an automatic ability that
+requires information from a card
+when the card is moved from a
+public zone to another public zone
+(except as outlined in 10.8.4.1.2),
+use the information available in the
+zone after said card has moved.
+10.8.4.2
+If a card has the zone change
+trigger condition, and that card moves to
+a zone where that ability is active at the
+same time that another card moves to a
+zone that fulfills that zone change trigger
+condition, that trigger condition is
+considered to be fulfilled.
+10.8.5Some effects create automatic abilities which
+possess trigger conditions that are fulfilled at
+a later point in the game. An ability created in
+this manner is called a delayed triggered
+ability.
+10.8.5.1
+Delayed triggered abilities,
+unless otherwise specified, fulfill trigger
+condition(s) only 1 time.
+10.8.6Some automatic abilities possess trigger
+conditions that are fulfilled not when a
+specified event occurs, but when a specified
+condition is fulfilled (such as “when there are
+no cards in your hand”). This is known as
+“state trigger condition”.
+10.8.6.1
+When the state trigger condition
+is fulfilled, automatic abilities with state
+activation enter a standby state only 1
+time. After this automatic ability is
+resolved, if that automatic ability’s trigger
+condition is fulfilled again, that ability
+enters the standby state again.
+
+10.8.7When an automatic ability in the standby
+state is played, even if the zone of the card
+that possessed that ability is changed, that
+automatic ability must still be played.
+10.9 Resolving One-Time Effects
+10.9.1When a one-time effect is required to be
+executed, the action that is instructed is
+executed 1 time.
+10.10Resolving Continuous Effects
+10.10.1If a card’s information is required when any
+continuous effects that require said
+information are in effect, the continuous effect
+is applied on that information in the order as
+follows.
+10.10.1.1
+Information that is written on the
+card is the base value.
+10.10.1.2
+Next, effects that grant abilities,
+remove abilities, enable abilities, or
+disable abilities are applied.
+10.10.1.3
+Next, all continuous effects that
+do not change the value of the
+information are applied.
+10.10.1.4
+Next, all continuous effects that
+change the value of the information are
+applied.
+10.10.1.5
+If the order of application of
+Continuous Effect A and Continuous
+Effect B is not determined by 10.10.1.2
+-10.10.1.4, and the application of Effect
+A affects what Effect B is applied on or
+how it is applied, Effect B is an effect
+that is dependent on Effect A. An effect
+that is dependent on any other effect is
+always resolved after the effect it is
+dependent on is resolved
+10.10.1.6
+If the order of application of
+multiple continuous effects is not
+determined by 10.10.1.2 -10.10.1.5,
+those continuous effects are applied in
+the order that they were generated.
+10.10.1.6.1
+If the source of activation of a
+continuous effect is a continuous
+ability, the time when the card
+possessing that ability is placed on
+its current zone is its fundamental
+order.
+10.10.1.6.2
+For all other abilities, the time
+when the ability is played is its
+fundamental order.
+10.10.2Continuous effects resulting from trigger
+conditions other than continuous abilities will
+not apply to cards that move from the base to
+a zone other than the base after that ability
+has been played.
+10.10.3If a continuous effect changes the
+information of a card in a specified zone, the
+change is applied on said card the instant it
+enters that zone.
+10.10.3.1
+If the trigger condition of an
+automatic ability is a card possessing
+specified information entering a specified
+zone, the information is referred to only
+XX
+
+XX
+
+after the continuous effect for that zone
+has been applied.
+10.11 Resolving Replacement Effects
+10.11.1When a replacement effect occurs, if there
+is a situation that would have occurred
+otherwise, it does not occur, and is replaced
+by another situation stated by the
+replacement effect.
+10.11.1.1
+In so doing, the original situation
+that would have resulted otherwise, does
+not occur at all due to the replacement
+effect.
+10.11.2If multiple replacement effects are
+generated simultaneously by the same
+situation, the player receiving the
+consequences of those effects makes the
+decision as to which effects are applied first.
+10.11.2.1
+If the consequence affects a
+card or an ability, its respective master
+makes the decision.
+10.11.2.2
+If the consequence affects an
+action during the game, the player that
+performs that action or the master of the
+card that applies that action makes the
+decision.
+10.11.2.3
+For the same situation, each
+replacement effect is applied a maximum
+of 1 time.
+10.11.3If the replacement effect is a choice-type
+replacement effect (“when …, (the player)
+may …. instead. If they do, do …), if that
+choice cannot be made, this replacement
+effect is not applied.
+10.12Final Information
+10.12.1If an effect references a specified card’s
+information and/or state, and if the specified
+card is moved from that zone or a base to a
+zone other than the base while that effect is
+being performed, that effect references the
+information and/or state of the card as when
+that card was last in that zone.
+10.13Source
+10.13.1Some abilities and effects require
+identifying where the source of the effect or
+damage is from.
+10.13.2The source of an ability refers to the card
+that has that ability, or, in the case of a
+delayed triggered ability, the card that has the
+ability that caused that delayed triggered
+ability to occur.
+10.13.3If an effect deals damage, unless otherwise
+specified, the source of damage is the card
+that possessed said ability with that effect,
+and if the damage is due to battle, the source
+of damage is the card that dealt that damage.
+11. Rule Action
+11.1 General Rule Action
+11.1.1“Rule Action” is a collective term referring to a
+resolution automatically performed in
+
+accordance with the rules when a specified
+event has occurred or is occurring during the
+game.
+11.1.2Rule actions are classified as two types:
+interrupt type rule actions that suspend the
+game temporarily when specific situations
+occur, and check type rule actions that check
+if the conditions are fulfilled during check
+timing.
+11.1.2.1Rule actions classified as interrupt type
+rule actions are performed when a
+specified condition(s) is met during the
+game, suspending all actions being
+performed without exception, performing
+itself immediately.
+11.1.2.2If there are multiple masters of the
+card(s) or zone(s) related to those rule
+actions, the turn player performs all
+interrupt type rule actions that are
+related to their own cards or zones first,
+followed by the non-turn player.
+11.1.2.3Rule actions classified as check type
+rule actions are performed only when a
+specified condition(s) is fulfilled during a
+check timing. Even if the condition(s) is
+fulfilled during the resolution of another
+action, if that condition(s) is not fulfilled
+during the check timing, this rule action
+does not happen.
+11.1.2.4When multiple check type rule actions
+are to be performed simultaneously, all
+those rule actions are performed
+simultaneously.
+11.2 Player Damage Resolution
+11.2.1If any player’s damage taken (3.2.2) is 1 or
+greater, perform the following. This is an
+interrupt rule action.
+11.2.1.1If multiple players have taken 1 or more
+damage, perform the player damage
+resolution of the turn player first.
+11.2.2Perform the following for player damage
+resolution.
+11.2.2.1That player puts the top card of their
+deck into their graveyard.
+11.2.2.2If the card put into the graveyard from
+this action has a lucky icon (2.11),
+proceed to 11.2.2.4.
+11.2.2.3If the number of cards put into the
+graveyard by this action during this
+damage resolution is equal to or greater
+than the damage taken by that player, or
+the number of cards in that deck is zero,
+reduce that player’s life by that amount
+of damage, then proceed to 11.2.2.4.
+Otherwise, return to 11.2.2.1.
+11.2.2.4Set the amount of damage taken by that
+player to 0, and this player damage
+resolution ends.
+11.3 Losing Verdict Resolution
+11.3.1If any player’s life is 0 or less, that player
+loses the game.
+11.3.2If any player’s number of cards in their deck
+becomes 0, that player loses the game.
+
+11.3.3Losing verdict resolution is a check type rule
+action.
+11.4 Lethal Damage Resolution
+11.4.1If any Pal or structure in any base takes
+greater than 0 damage, and it is equal to or
+greater than that Pal’s power or structure’s
+durability, put that Pal or structure into their
+owner’s graveyard.
+11.4.2Lethal damage resolution is a check type rule
+action.
+11.5 Overloaded Pals Resolution
+11.5.1If the number of a player’s Pals in a base
+exceeds the maximum number of Pals
+(4.4.5), perform the following resolution.
+11.5.1.1If the Pals placed last in the base cause
+the number of Pals to be greater than
+the maximum Pal limit of that base's
+master, choose a number of Pals equal
+to the maximum Pal limit from among
+those Pals. Otherwise, choose all of
+those Pals.
+11.5.1.2Choose from the Pals that were not
+placed last in the base, a number of Pals
+equal to that base's master's maximum
+Pal limit minus the number of Pals
+chosen in 11.5.1.
+11.5.1.3Put all Pals other than those chosen in
+11.5.1.1 and 11.5.1.2 from that base into
+their owner’s graveyard at the same
+time.
+11.5.2Overloaded Pals resolution is a check type
+rule action.
+11.6 Set Card Resolution
+11.6.1If the card associated with a card (also known
+as a "set card") in the set area (4.12) no
+longer exists, that set card is put into its
+owner's graveyard.
+11.6.2If a set card is associated with multiple cards,
+the master of that set card chooses 1 of the
+cards last associated with that set card, and
+cancels the associations with all the other
+cards.
+11.6.3Set card resolution is a check type rule
+action.
+11.7 Duplicate Legendary Card Resolution
+11.7.1If a player has multiple cards in their base
+that possess the legendary ability (12.16) and
+have the exact same card name, the player
+of that base chooses 1 of those cards, and
+puts those cards except for that card into
+their owner's graveyard.
+11.7.1.1If a card name is divided into a main
+name and a sub-name, the card names
+are considered to be exactly identical
+only if both the main name and the
+sub-name are identical.
+
+12. Keywords and Keyword Abilities
+12.1 Overview
+12.1.1Keywords are terms that are used to
+abbreviate abilities that perform specific
+processes. Abilities that are indicated by
+specific keywords are called keyword
+abilities.
+12.2 Quick
+12.2.1Quick is a keyword written in the text of cards
+and abilities that can be played during the
+Quick Step (9.5).
+12.2.1.1
+If an activated ability (10.1.1.1)
+has this keyword at the beginning of its
+text, that ability itself can be played
+during the Quick Step.
+12.2.1.2
+If an event card has this
+keyword at the beginning of its text, that
+event card can be played during the
+Quick Step.
+12.2.2"【Quick】" may be represented by a
+icon.
+12.3 On Deploy
+12.3.1On deploy is an automatic ability that triggers
+when the card is deployed (5.15).
+12.3.2“【On Deploy】(effect)” means “when this card
+is deployed, (effect)”.
+12.3.2.1
+【On Deploy】 may be
+represented by the
+within the text.
+
+icon
+
+12.4 On Attack
+12.4.1On attack is an automatic ability that triggers
+when the card attacks (9.3.2).
+12.4.2“【On Attack】(effect)” means “when this card
+attacks, (effect)”.
+12.4.2.1
+【On Attack】 may be
+represented by the
+within the text.
+
+icon
+
+12.5 On Assign
+12.5.1On assign is an automatic ability that triggers
+when the card is assigned to a structure
+(5.17).
+12.5.2“【On Assign】(effect)” means “when this card
+is assigned, (effect)”.
+12.5.2.1
+【On Assign】 may be
+represented by the
+within the text.
+
+icon
+
+12.6 Brave
+12.6.1Brave is an automatic ability that triggers
+when the card attacks, and its effect
+increases its power.
+12.6.2“Brave (number)” means “【On Attack】, this
+card’s power increases by (number) until end
+of turn”.
+12.7 Serious
+12.7.1Serious is an automatic ability that triggers
+when the card is assigned to a structure, and
+its effect increases a Pal’s power.
+
+12.7.2“Serious (number)” means “【On Assign】
+Choose 1 Pal, and its power increases by
+(number) until end of turn”.
+12.8 Interrupt
+12.8.1Interrupt is a quick activated ability that can
+nullify an attack.
+12.8.2Interrupt means “【Quick】 [①, discard this
+card] OR [Discard this card and 1 other card
+from hand] Nullify the opponent's attack”.
+12.9 Vigilance
+12.9.1Vigilance is an automatic ability that triggers
+when the turn ends, and its effect stands the
+card at the end of the turn.
+12.9.2“Vigilance” means “at the end of your turn,
+stand this card”.
+12.10Taunt
+12.10.1Taunt is a continuous ability that forces the
+card to be chosen as the target of attacks.
+12.10.2“Taunt” means “the opponent must target
+this card if it can be targeted for an attack”
+(9.3.1).
+12.10.2.1
+If there are multiple cards with
+Taunt that can be chosen as an attack
+target, the player is obligated to choose
+one of them, regardless of the number of
+instances of Taunt each card possesses.
+12.10.3If a card with taunt cannot be chosen as the
+valid attack target, a different valid target may
+be chosen instead.
+12.11 Stealth
+12.11.1Stealth is a continuous ability that restricts
+the blocking of the card’s attacks.
+12.11.2“Stealth” means “this card cannot be
+blocked”.
+12.12Retaliate
+12.12.1Retaliate is an automatic ability that triggers
+when the Pal is put into the graveyard during
+a battle, sending the opposing Pal to the
+graveyard as well.
+12.12.2“Retaliate” means “when this card is put
+into the graveyard, if this was a Pal that
+battled, put the opposing combat Pal into the
+graveyard”.
+12.13Nocturnal
+12.13.1Nocturnal is a continuous ability that
+increases power while the specific state
+“night” is active.
+12.13.2“Nocturnal” means “if it is night, this card’s
+power increases by 300”.
+12.14Breakthrough
+12.14.1Breakthrough is an automatic ability that
+triggers during combat when the opposing
+combat Pal is put into the graveyard, and its
+effect deals damage to the master of that Pal.
+12.14.2“Breakthrough” means “if the opposing
+combat Pal is put into the graveyard when
+this card is attacking, deal damage to the
+
+master of the opposing combat Pal equal to
+this card’s strike”.
+12.15Assault
+12.15.1Assault is a continuous ability that allows a
+card to choose a Pal in the stand state as an
+attack target.
+12.15.2"Assault" means "This card can choose a
+Pal in the stand state as an attack target"
+(9.2.3).
+12.16Legendary
+12.16.1Legendary is a continuous ability that
+prevents multiple cards with the same card
+name as itself from being brought out
+simultaneously.
+12.16.2The Legendary ability itself does not have
+an effect, but cards with the Legendary ability
+may be processed by rule processes (11.7).
+13. Miscellaneous
+13.1 Infinite Loops
+13.1.1When performing a resolution, it is possible
+that some actions may be performed
+indefinitely, or a player is forced to perform an
+action indefinitely. This is known as an
+“infinite loop”, and the sequence of actions
+from the start of an infinite loop until it goes
+back to its original point are known as “loop
+actions”. In this instance, do as follows:
+13.1.1.1
+During that sequence, if both
+players are unable to stop that infinite
+loop, the game ends in a draw.
+13.1.1.2
+If either player is able to stop
+that infinite loop, the player(s) that can
+stop that infinite loop decides the
+number of times that infinite loop will be
+performed starting from the turn player.
+Then, that action is performed the lowest
+number of times chosen between the
+players.
+13.1.1.2.1 If the game remains in the same
+state after performing the loop the
+specified number of times, that
+infinite loop cannot be performed
+again.
+13.2 Managing Souls Without Soul Cards
+13.2.1During a game, players may be permitted to
+manage their souls without using physical
+soul cards.
+13.2.1.1
+In casual matches, this is
+determined by the mutual agreement of
+both players. In events such as
+tournaments, whether this is permitted or
+not is determined by the regulations of
+that specific event.
+13.2.2When managing souls without soul cards, a
+player must track the total number of soul
+cards that would be placed there if soul cards
+were used, as well as the number of those
+soul cards that would be in the standing
+state.
+
+13.2.3If any process is applied to cards in the soul
+area during a game, that process is applied
+as if soul cards corresponding to the currently
+tracked soul values exist in the soul area, and
+the player continues to track the values
+modified by the results of that process.
+Changelog
+November 2, 2026; ver. 1.01
+- Lucky Pal icon has been updated to lucky icon.
+October 29, 2026; ver. 1.01
+- “Trait” has been defined in Card Information.
+- Definition of Stand/Rest State has been updated.
+- Specific action “Put underneath a card” and
+relevant rules have been defined.
+- Keyword ability “Legendary” and relevant rules
+have been defined.
+July 29, 2026; ver. 1.00
+- Version 1 has been created.
+
+

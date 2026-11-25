@@ -28,6 +28,12 @@ Open the page and use the three tabs:
 
 The whole app is a single static file, `index.html`, with no dependencies and no build step. You can also download it and open it locally with a double click.
 
+## Rules and tests
+
+- `rules/`: the official Comprehensive Rules (PDF and extracted text, ver. 1.01 updated 2 Nov 2026) and the Play Guide.
+- `node tests/scenarios.js`: rule scenarios. Each one sets up a precise position, performs one action and checks the result against a section of the Comprehensive Rules (setup, mulligan, phases, souls, attack targets, blocks, battle damage, player damage and Lucky cards, Interrupt, every keyword, the 5-Pal limit, Legendary, deck construction).
+- `node tests/usage.js [games]`: does the AI use each mechanic? Plays heuristic games and reports how often each mechanic happens and which activated abilities the AI never or rarely uses.
+
 ## Known simplifications
 
 - **Alarm Bell**: the obligation to attack is not enforced.
@@ -41,6 +47,10 @@ The whole app is a single static file, `index.html`, with no dependencies and no
 The simulator is a tool for comparing decks, not a perfect model of human play. Use at least 300 games before drawing conclusions from the card impact table.
 
 Planned AI improvements are listed in [TODO.md](TODO.md).
+
+## Feedback
+
+Found a rule applied wrong, a card that does not match its text or an AI mistake? Use **Report a bug** in the site footer, or open an [issue](https://github.com/raxp122/PalworldTCGHelper/issues/new/choose) (a GitHub account is needed). Quoting the card text or the Comprehensive Rules article helps a lot.
 
 ## Support
 

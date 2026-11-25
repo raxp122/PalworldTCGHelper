@@ -1,0 +1,10 @@
+name: Idea or improvement
+description: Suggest a feature or an AI improvement.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Idea
+    validations:
+      required: true

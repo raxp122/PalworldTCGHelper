@@ -1,5 +1,25 @@
 # TODO
 
+## Rules audit
+
+Comprehensive Rules (`rules/`) checked against the engine, one mechanic at a time, with a scenario test for each (`tests/scenarios.js`, 32 scenarios).
+
+- [x] Setup, mulligan, stand/draw/soul phases, paying 3 souls to draw (6, 7, 8.5)
+- [x] Attack targets, Assault, Taunt, blocks, Stealth, battle damage, structures, damage removed at end of turn (9, 7.6.3)
+- [x] Player damage and Lucky cards, running out of deck during damage, losing conditions (11.2, 11.3)
+- [x] Interrupt (soul or discard), Brave, Serious, Vigilance, Nocturnal, Retaliate, Breakthrough, Legendary (12)
+- [x] Deck construction (6.1)
+- [x] **Fixed**: more than 5 Pals (11.5). The engine kept the 5 most valuable Pals and could discard the one just deployed; the rules keep the Pals placed last and let the player choose among the older ones.
+- [ ] Card by card: check each card's effect against its text, group by group (by set and color), with a scenario for the non-trivial ones.
+- [ ] 7.3.1 says the player going first "skips the draw phase"; the engine (and the Play Guide's usual reading) skips it only on their first turn. Confirm.
+
+## AI uses of mechanics (`tests/usage.js`)
+
+- [x] Cards the AI played but never activated: Medieval Medicine Workbench and High Quality Hot Spring now value what they bring back or protect; Alarm Bell and Electric Kitchen no longer count the Pals they stand again as rested.
+- [ ] Still never or rarely activated, mostly because they need combos: Katress, Meat Cleaver, Beware of Mammorest Sign, Digtoise (Ingredient), No Pals Beyond Sign, Fine Bed, Hot Spring, Vaelet.
+- [ ] **Quick events are almost never played** (0.02 per game; Crystal Breath, Seed Machine Gun and Poison Fog never): they are paid with souls during the opponent's turn and the AI spends all its souls on its own turn. Teach the AI to keep souls up when it holds Quick events or Interrupts.
+- [ ] Blocks are rare (0.46 per game): check whether the block heuristic is too cautious.
+
 ## AI improvements for more accurate simulations
 
 The current AIs live in the `js-ai` block of `index.html`:

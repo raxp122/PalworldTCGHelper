@@ -1,0 +1,32 @@
+name: Bug report
+description: A rule applied wrong, a card effect that does not match its text, an AI mistake or a site problem.
+labels: [bug]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Rules engine, Card effect, AI decision, Tournament / simulator, Deck builder, Site / UI, Other]
+    validations:
+      required: true
+  - type: input
+    id: cards
+    attributes:
+      label: Cards involved
+      description: Card names or IDs (e.g. EBP01-013).
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened and what should have happened
+      description: If it is a rule, quote the card text or the Comprehensive Rules article.
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Game log or deck export (optional)
+      render: text
+  - type: input
+    id: environment
+    attributes:
+      label: Browser / device
