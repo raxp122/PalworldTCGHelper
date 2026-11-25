@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; worker-src blob:; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <title>Palworld TCG Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -173,7 +175,7 @@ details.sum summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;
     <div class="deckside">
       <div class="row"><div><label for="dS">Deck being edited</label><select id="dS"></select></div></div>
       <div class="row"><button id="bNew" class="sm">New</button><button id="bDup" class="sm">Duplicate</button><button id="bDel" class="sm">Delete</button><button id="bAuto" class="sm">Fill to 50</button></div>
-      <div><label for="dN">Name</label><input type="text" id="dN"></div>
+      <div><label for="dN">Name</label><input type="text" id="dN" maxlength="80" autocomplete="off"></div>
       <div class="chips" id="dInfo"></div>
       <div class="note" id="dErr"></div>
       <div class="curve" id="curve"></div><div class="curvel"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
@@ -194,7 +196,7 @@ details.sum summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;
 <section class="view" id="v-game">
   <div class="vs">
     <div class="deckcard A"><h3><span class="tag">A</span>Deck A</h3><select id="sA" aria-label="Deck A"></select></div>
-    <div class="mid"><div><label for="sSeed">Random seed</label><input type="number" id="sSeed" value="1"></div><button class="go" id="sGo">Play and show</button></div>
+    <div class="mid"><div><label for="sSeed">Random seed</label><input type="number" id="sSeed" value="1" min="1" max="999999999" step="1"></div><button class="go" id="sGo">Play and show</button></div>
     <div class="deckcard B"><h3><span class="tag">B</span>Deck B</h3><select id="sB" aria-label="Deck B"></select></div>
   </div>
   <div class="life" id="lifeT"></div>
@@ -1602,7 +1604,33 @@ function autoDeck(deck, colors, seed) {
 }
 
 const LS = 'palworld-sim-decks-v1';
-function lsLoad() { try { return JSON.parse(localStorage.getItem(LS) || '[]'); } catch (e) { return []; } }
+const NAME_MAX = 80;
+const cleanName = x => (typeof x === 'string' ? x.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, NAME_MAX) : '') || 'Untitled';
+// keeps only known cards, with whole-number counts clamped to each card's copy limit
+function cleanCards(x) {
+  const out = {}; if (!x || typeof x !== 'object' || Array.isArray(x)) return out;
+  for (const [id, n] of Object.entries(x)) {
+    if (!Object.prototype.hasOwnProperty.call(PE.DB, id) || PE.DB[id].kind === 'Soul') continue;
+    const k = Math.min(PE.deckLimit(id), 50, Math.floor(Number(n)));
+    if (k > 0) out[id] = k;
+  }
+  return out;
+}
+// decks read from storage are untrusted: rebuild them field by field
+function cleanDeck(x, id) {
+  if (!x || typeof x !== 'object') return null;
+  id = typeof id === 'string' ? id : x.id;
+  if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(id) || id.startsWith('preset-')) return null;
+  return {id, name: cleanName(x.name), cards: cleanCards(x.cards)};
+}
+function lsLoad() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(LS) || '[]'); if (!Array.isArray(raw)) return [];
+    const seen = new Set(), out = [];
+    for (const x of raw.slice(0, 500)) { const d = cleanDeck(x); if (d && !seen.has(d.id)) { seen.add(d.id); out.push(d); } }
+    return out;
+  } catch (e) { return []; }
+}
 function lsSave() { try { localStorage.setItem(LS, JSON.stringify(decks.filter(d => !d.preset))); } catch (e) {} }
 const pendingSave = {};
 function saveDeck(d) {
@@ -1775,10 +1803,10 @@ function parseImport(text) {
   const byName = {}; for (const c of ALL) byName[c.name.toLowerCase()] = c.id;
   const out = {}; const bad = [];
   for (const line of text.split('\n')) {
-    const m = line.trim().match(/^(\d+)\s*x?\s+(.+)$/i); if (!m) continue;
+    const m = line.trim().slice(0, 200).match(/^(\d{1,9})\s*x?\s+(.+)$/i); if (!m) continue;
     let rest = m[2].trim(); let id = (rest.match(/^(E(?:BP|TD|SS)\d\d-\d{3})/i) || [])[1];
     if (id) id = id.toUpperCase(); else id = byName[rest.toLowerCase().replace(/ - /g, ' – ')];
-    if (id && PE.DB[id]) out[id] = (out[id] || 0) + +m[1]; else bad.push(rest);
+    if (id && Object.prototype.hasOwnProperty.call(PE.DB, id) && PE.DB[id].kind !== 'Soul') out[id] = Math.min(PE.deckLimit(id), (out[id] || 0) + Math.min(+m[1], 50)); else bad.push(rest.slice(0, 60));
   }
   return {cards: out, bad};
 }
@@ -1789,7 +1817,7 @@ function showGame() {
   for (const d of [A, B]) { const v = PE.validateDeck(deckList(d)); if (!v.ok) { toast(`${d.name}: ${v.errs[0]}`); return; } }
   $('#sGo').disabled = true; $('#sGo').textContent = 'The AIs are playing…';
   setTimeout(() => {
-    const logs = []; const sd = +$('#sSeed').value || 1;
+    const logs = []; const sd = Math.min(999999999, Math.max(1, Math.floor(+$('#sSeed').value) || 1));
     const g = PE.Game.create(deckIds(A), deckIds(B), sd, [AI.makeSearch({rollouts: 6}), AI.makeSearch({rollouts: 6})], {log: true, logs, firstPlayer: sd % 2});
     g.run();
     const lifeBy = []; let html = ''; let lastT = '';
@@ -1826,13 +1854,13 @@ async function start() {
   for (const s of ['#fq', '#fs', '#fc', '#fk']) $(s).addEventListener('input', renderCardList);
   $('#cl').onclick = onQtyClick; $('#dl').onclick = onQtyClick;
   $('#dS').onchange = () => { editing = getDeck($('#dS').value); renderDeck(); renderCardList(); };
-  $('#dN').oninput = () => { if (editing.preset) return; editing.name = $('#dN').value || 'Senza nome'; saveDeck(editing); fillSelects(); renderSimDecks(); };
+  $('#dN').oninput = () => { if (editing.preset) return; editing.name = cleanName($('#dN').value); saveDeck(editing); fillSelects(); renderSimDecks(); };
   $('#bNew').onclick = () => { const d = {id: uid(), name: 'New deck ' + (decks.filter(x => !x.preset).length + 1), cards: {}}; decks.push(d); editing = d; fillSelects(); $('#dS').value = d.id; saveDeck(d); renderDeck(); renderCardList(); };
   $('#bDup').onclick = () => { const d = {id: uid(), name: editing.name.replace(/ \((approx\.|auto)\)$/, '') + ' (copy)', cards: Object.assign({}, editing.cards)}; decks.push(d); editing = d; fillSelects(); $('#dS').value = d.id; saveDeck(d); renderDeck(); };
   $('#bDel').onclick = () => { if (editing.preset) { toast('Sample decks cannot be deleted'); return; } if ($('#bDel').dataset.arm !== '1') { $('#bDel').dataset.arm = '1'; $('#bDel').textContent = 'Confirm'; setTimeout(() => { $('#bDel').dataset.arm = ''; $('#bDel').textContent = 'Delete'; }, 3000); return; }
     const id = editing.id; decks = decks.filter(d => d.id !== id); lsSave(); delDeckRemote(id); editing = decks[0]; fillSelects(); $('#dS').value = editing.id; renderDeck(); renderCardList(); renderSimDecks(); $('#bDel').dataset.arm = ''; $('#bDel').textContent = 'Delete'; };
   $('#bAuto').onclick = () => { ensureOwn(); autoDeck(editing, null); saveDeck(editing); renderDeck(); renderCardList(); renderSimDecks(); };
-  $('#bImp').onclick = () => { ensureOwn(); const r = parseImport($('#io').value); editing.cards = r.cards; saveDeck(editing); renderDeck(); renderCardList(); renderSimDecks(); toast(r.bad.length ? `Not recognized: ${r.bad.slice(0, 3).join(', ')}` : 'Deck imported'); };
+  $('#bImp').onclick = () => { ensureOwn(); const r = parseImport($('#io').value.slice(0, 20000)); editing.cards = r.cards; saveDeck(editing); renderDeck(); renderCardList(); renderSimDecks(); toast(r.bad.length ? `Not recognized: ${r.bad.slice(0, 3).join(', ')}` : 'Deck imported'); };
   $('#bCopy').onclick = async () => { try { await navigator.clipboard.writeText($('#io').value); toast('Copied'); } catch (e) { $('#io').select(); toast('Select and copy manually'); } };
   // sample computed on load: 40 quick heuristic games
   setTimeout(async () => { const s = AI.runMatch(deckIds(getDeck('preset-bp-control')), deckIds(getDeck('preset-ETD01')), 40, () => AI.Greedy, () => AI.Greedy, 4242); showResults(mergeStats([JSON.parse(JSON.stringify(s))]), getDeck('preset-bp-control'), getDeck('preset-ETD01')); $('#eta').textContent = 'Sample: 40 games with the heuristic AI. Press Simulate to use the search AI.'; }, 50);
@@ -1843,7 +1871,7 @@ async function start() {
       db = await window.claude.use('db');
       if (db) {
         const snap = await db.collection('decks').get(); clearTimeout(timer);
-        for (const doc of snap.docs) { const x = doc.data(); if (!x || getDeck(doc.id)) continue; let cards = {}; try { cards = JSON.parse(x.cards || '{}'); } catch (e) {} if (typeof x.name !== 'string') continue; decks.push({id: doc.id, name: x.name.slice(0, 80), cards}); }
+        for (const doc of snap.docs) { const x = doc.data(); if (!x || getDeck(doc.id)) continue; let cards = {}; try { cards = JSON.parse(typeof x.cards === 'string' ? x.cards : '{}'); } catch (e) {} if (typeof x.name !== 'string') continue; const d = cleanDeck({name: x.name, cards}, doc.id); if (d) decks.push(d); }
         for (const d of decks.filter(d => !d.preset)) if (!snap.docs.some(x => x.id === d.id)) saveDeck(d);
         fillSelects(); renderSimDecks(); $('#saveState').textContent = 'Decks are saved online automatically.';
       } else clearTimeout(timer);
