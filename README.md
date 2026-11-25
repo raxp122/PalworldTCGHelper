@@ -6,4 +6,6 @@ Simulatore del Palworld OFFICIAL CARD GAME (versione inglese): tutte le 253 cart
 - `index.html` è l'intera applicazione in un solo file (dati delle carte, motore, effetti, IA e interfaccia inline). Si apre anche con doppio clic.
 - I mazzi creati vengono salvati nel `localStorage` del browser.
 
+Se ti è utile puoi offrirmi un caffè su [Ko-fi](https://ko-fi.com/raxp122) ☕
+
 Progetto amatoriale non ufficiale, non affiliato con Pocketpair o Bushiroad.
