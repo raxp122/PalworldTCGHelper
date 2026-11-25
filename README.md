@@ -48,6 +48,10 @@ The simulator is a tool for comparing decks, not a perfect model of human play. 
 
 Planned AI improvements are listed in [TODO.md](TODO.md).
 
+## Feedback
+
+Found a rule applied wrong, a card that does not match its text or an AI mistake? Use **Report a bug** in the site footer, or open an [issue](https://github.com/raxp122/PalworldTCGHelper/issues/new/choose) (a GitHub account is needed). Quoting the card text or the Comprehensive Rules article helps a lot.
+
 ## Support
 
 If you find it useful, you can [buy me a coffee on Ko-fi](https://ko-fi.com/raxp122) ☕
