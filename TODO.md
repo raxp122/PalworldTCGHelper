@@ -9,7 +9,8 @@ The current AIs live in the `js-ai` block of `index.html`:
 Simulated results are only as good as these players. Known weaknesses, roughly by expected impact:
 
 ### 1. Decision coverage
-- [ ] **Search only decides main-phase actions.** Blocks, Quick-step responses (Interrupt and Quick events), mulligans and every choice inside an effect (`g.pick`: targets, discards, modes) are always made by the Greedy heuristics, even for the Search AI. Extend the search to blocks and Interrupt decisions first: these swing games the most.
+- [x] **Search decides blocks and Quick-step responses.** The battle is split into resumable steps (`battleBlock`, `battleQuick`, `battleDamage`); the Search AI plays out no block and its best blockers, and passing versus each Interrupt (paid with a soul or a discard) or defensive Quick event.
+- [ ] Choices inside effects (`g.pick`: targets, discards, modes) are still made by the Greedy heuristics, even for the Search AI.
 - [ ] **Lethal detection is a stub** (`lethalFor` returns 0). Before attacking, compute whether the available attackers plus buffs can deal the opponent's remaining life through their possible blockers and Interrupts. Do the same in reverse to keep enough blockers back when the opponent threatens lethal.
 - [ ] **Mulligan rule is trivial**: the AI redraws when the hand has no non-event card costing 3 or less (about 30% of hands). With the heuristic AI the rule makes no measurable difference: 'never mulligan', the current rule and two curve-based rules all score 50% ±1.7 against each other over 3,360 games each. Revisit once the search AI is stronger, scoring hands by curve, colors and key cards or with a few rollouts.
 

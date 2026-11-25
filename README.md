@@ -11,7 +11,7 @@ A deck simulator for the **Palworld OFFICIAL CARD GAME** (English edition). Buil
 - **Deck builder** with deck legality checks (50 cards, max 4 copies per full card name, max 8 Lucky-icon cards, max 2 colors + Colorless), a cost curve, card search and filters, text import/export and a "Fill to 50" helper.
 - **Two AIs**:
   - *Heuristic AI*: fast, a few milliseconds per game.
-  - *Search AI*: short-horizon Monte Carlo search. It reshuffles hidden information in every rollout, so it never sees your hand or deck order.
+  - *Search AI*: short-horizon Monte Carlo search for its main moves, blocks and Quick-step responses (Interrupt and Quick events). It reshuffles hidden information in every rollout, so it never sees your hand or deck order.
 - **Match statistics**: win rates with a 95% margin of error, first-player advantage, how games end, and a per-card "impact" table (win rate when the card was played minus the deck's overall win rate).
 - **Single game viewer**: read a full game move by move.
 - **Tournament mode**: up to 10 decks, each with its own AI, round robin or Swiss, best of 1 or best of 3. It simulates N tournaments and shows the average standings, how often each deck wins or makes the top half, the distribution of placements and a head-to-head matrix.
@@ -34,7 +34,7 @@ The whole app is a single static file, `index.html`, with no dependencies and no
 - **Antique Dresser**: the first ability (declaring a card name) is not simulated.
 - **Aurora Guide**: the AI only uses it as a simple draw.
 - **Shadowbeak**: the opponent always sends their weakest Pal to the graveyard.
-- Choices inside effects (targets, discards) are always made by a heuristic, even for the Search AI.
+- Choices inside effects (targets, discards) and the mulligan are always made by a heuristic, even for the Search AI.
 - Games are declared a draw after 40 total turns.
 - The Trial Deck presets use **approximate** copy counts, because the official lists have not been published.
 
