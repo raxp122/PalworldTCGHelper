@@ -109,6 +109,24 @@ details.sum summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;
 @media(max-width:860px){.builder{grid-template-columns:minmax(0,1fr)}.deckside{position:static}.two{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:700px){.vs{grid-template-columns:minmax(0,1fr)}.big{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.big .bar{grid-column:1/-1;grid-row:2}.filters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.filters input{grid-column:1/-1}}
 @media(prefers-reduced-motion:reduce){.bar i{transition:none}}
+.tour{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px;align-items:start}
+.plist{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.prow{display:grid;grid-template-columns:2em minmax(0,1fr) minmax(0,13em) auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--panel)}
+.prow .num{font:600 18px Kanit,sans-serif;color:var(--mut);text-align:center}
+.prow .chips{grid-column:2/-1}
+.tset{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--panel);display:flex;flex-direction:column;gap:10px}
+.tset .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+button.stop{background:var(--bg);border-color:var(--red);color:var(--red)}
+.rank td.pos{font:600 20px Kanit,sans-serif;width:2em}
+.rank td.avgp{font:600 18px Kanit,sans-serif}
+.dist{display:flex;gap:2px;align-items:flex-end;height:26px;min-width:8em}
+.dist i{flex:1;background:var(--sea);border-radius:2px 2px 0 0;min-height:1px}
+.aichip{display:inline-block;font-size:12px;color:var(--mut);border:1px solid var(--line);border-radius:99px;padding:0 7px;margin-left:6px;white-space:nowrap;vertical-align:1px}
+table.h2h th,table.h2h td{text-align:center;padding:5px 6px;white-space:nowrap}
+table.h2h th.rl,table.h2h td.rl{text-align:left}
+table.h2h td.self{color:var(--mut)}
+@media(max-width:860px){.tour{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:560px){.prow{grid-template-columns:2em minmax(0,1fr) auto}.prow .ai{grid-column:2/3;grid-row:2}.prow .chips{grid-column:2/-1}}
 .foot{border-top:1px solid var(--line);padding:16px max(4vw,16px) 28px;text-align:center;font-size:14px;color:var(--mut)}
 .foot a{color:var(--sea);font-weight:600}
 :root[data-theme=dark] .foot a{color:#7fd0d8}
@@ -123,6 +141,7 @@ details.sum summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;
     <a href="#simulate" data-v="simulate">Simulate</a>
     <a href="#decks" data-v="decks">Decks &amp; cards</a>
     <a href="#game" data-v="game">Single game</a>
+    <a href="#tournament" data-v="tournament">Tournament</a>
   </nav>
 </header>
 <main>
@@ -201,6 +220,34 @@ details.sum summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;
   </div>
   <div class="life" id="lifeT"></div>
   <div class="log" id="logBox"><p class="note">Pick two decks and press "Play and show" to read a game move by move, played by two search AIs.</p></div>
+</section>
+<section class="view" id="v-tournament">
+  <div class="tour">
+    <div>
+      <h2>Participants <span class="note" id="tCount"></span></h2>
+      <p class="note">Up to 10 decks. Each participant can use a different AI; the same deck can enter more than once.</p>
+      <div class="row"><button id="tAdd" class="sm">Add deck</button><button id="tTop8" class="sm">Load top 8 + Trial Decks</button><button id="tClear" class="sm">Remove all</button></div>
+      <div style="margin-top:10px;max-width:22em"><label for="tAll">Set every AI to</label><select id="tAll"><option value="">—</option></select></div>
+      <div class="plist" id="tList"></div>
+    </div>
+    <div class="tset">
+      <div class="pair">
+        <div><label for="tFmt">Format</label><select id="tFmt"><option value="rr">Round robin</option><option value="swiss">Swiss</option></select></div>
+        <div><label for="tRounds">Swiss rounds</label><input type="number" id="tRounds" min="1" max="9" step="1" placeholder="only for Swiss"></div>
+      </div>
+      <div class="pair">
+        <div><label for="tBo">Matches</label><select id="tBo"><option value="1">Best of 1</option><option value="3">Best of 3</option></select></div>
+        <div><label for="tN">Tournaments</label><select id="tN"><option>10</option><option selected>50</option><option>100</option><option>300</option><option>1000</option></select></div>
+      </div>
+      <p class="note" id="tEst"></p>
+      <button class="go" id="tGo">Run tournaments</button>
+      <button class="stop" id="tStop" hidden>Stop and show results so far</button>
+      <div class="prog"><i id="tPg"></i></div>
+      <div class="note" id="tEta">Ready.</div>
+    </div>
+  </div>
+  <div id="tRes"></div>
+  <p class="note">Win = 3 points, draw = 1. In Best of 3 the loser of a game goes first in the next one. Ties in a tournament are broken by opponents' match-win %, then game-win %, then at random. In Swiss, pairings avoid rematches when possible and the bye counts as a win. The ranking averages every simulated tournament: with the heuristic AI, decks that need long-term planning (engines built on structures and resources) are underrated.</p>
 </section>
 </main>
 <footer class="foot">Find it useful? <a href="https://ko-fi.com/raxp122" target="_blank" rel="noopener">Buy me a coffee on Ko-fi ☕</a> · Unofficial fan project, not affiliated with Pocketpair or Bushiroad.</footer>
@@ -419,6 +466,9 @@ class Game {
     return 30 + d.cost * 20;
   }
   hval(id) { const d = DB[id]; return d.cost * 20 + (d.isPal ? d.power * 0.08 + d.strike * 20 : 30); }
+  // abilities granted by a mod: the mod stores only {ref: cardId}, the functions live in FX[cardId].grant,
+  // so the game state stays plain data and can be cloned with structuredClone (needed by the search AI)
+  grant(m) { return m.ref ? (FX[m.ref] && FX[m.ref].grant) || {} : m; }
   mod(c, m, dur) { // dur: 'eot' | 'oppNext' | 'perm'
     m = Object.assign({}, m); m.exp = dur === 'oppNext' ? this.st.turn + 1 : dur === 'perm' ? 1e9 : this.st.turn;
     c.mods.push(m);
@@ -454,7 +504,7 @@ class Game {
     });
     for (const c of pl.base) {
       const f = this.fx(c); (f.acts || []).forEach((a, k) => { if (this.canAct(i, c, a)) acts.push({t: 'act', uid: c.uid, k}); });
-      for (const m of c.mods) if (m.act && this.canAct(i, c, m.act)) acts.push({t: 'act', uid: c.uid, k: 'm', ma: m.act});
+      for (const m of c.mods) { const gm = this.grant(m); if (gm.act && this.canAct(i, c, gm.act)) acts.push({t: 'act', uid: c.uid, k: 'm', ma: gm.act}); }
     }
     for (const c of this.pals(i)) if (this.canAttack(c)) for (const t of this.attackTargets(c)) acts.push({t: 'attack', uid: c.uid, tgt: t === 'player' ? 'player' : t.uid});
     if (!pl.soulDrawUsed && pl.soulsStand >= 3) acts.push({t: 'souldraw'});
@@ -637,7 +687,7 @@ class Game {
       if (other && this.inBase(other)) {
         const fo = this.fx(other);
         if (fo.onBattleKill) this.trig(other, () => fo.onBattleKill(this, other, c));
-        for (const m of other.mods) if (m.onBattleKill) m.onBattleKill(this, other, c);
+        for (const m of other.mods) { const gm = this.grant(m); if (gm.onBattleKill) gm.onBattleKill(this, other, c); }
         if (b.a === other.uid && this.hasKw(other, 'Breakthrough')) { const s = this.strike(other); this.log(`  Breakthrough: ${s} damage`); this.playerDamage(c.owner, s); }
       } else if (other && b.a === other.uid && c._kwSnapAtt && c._kwSnapAtt.Breakthrough) { this.playerDamage(c.owner, c._kwSnapAtt.st); }
     }
@@ -750,7 +800,7 @@ class Game {
     // Brave
     const brave = DB[a.id].kw.Brave; if (brave) this.trig(a, () => this.mod(a, {pw: brave}, 'eot'));
     if (fa.onAttack) this.trig(a, () => fa.onAttack(this, a, t));
-    for (const m of a.mods.slice()) if (m.onAttack) m.onAttack(this, a, t);
+    for (const m of a.mods.slice()) { const gm = this.grant(m); if (gm.onAttack) gm.onAttack(this, a, t); }
     if (t && fa.onAttackTarget) fa.onAttackTarget(this, a, t);
     for (const s of this.P(o).base.slice()) { const fs = this.fx(s); if (fs.onOppAttack) fs.onOppAttack(this, s, a, t); }
     if (t && this.inBase(t)) { const ft = this.fx(t); if (ft.onAttacked) ft.onAttacked(this, t, a); }
@@ -1066,7 +1116,7 @@ FX['EBP01-017'] = {aura: (g, me, t) => t.owner === me.owner && D(t.id).isPal && 
 FX['EBP01-018'] = {impl: 'partial', note: "Stands the Pals assigned this turn; the obligation to attack is not simulated",
   acts: [assignAct((g, me) => { for (const p of g.pals(me.owner)) if (p.assignedT === g.st.turn) { p.rested = false; p.noAssign = Object.assign(p.noAssign || {}, {all: g.st.turn}); } },
     (g, me) => g.pals(me.owner).filter(p => p.assignedT === g.st.turn).length >= 2 ? 60 : -1, {soul: 1}, 'Stand assigned')]};
-FX['EBP01-019'] = {acts: [gearAct(200, (g, me, t) => { if (t && main(g, t) === 'Foxparks') g.mod(t, {onAttack: (g2, a) => dmgPick(g2, a, 700)}, 'eot'); })]};
+FX['EBP01-019'] = {grant: {onAttack: (g2, a) => dmgPick(g2, a, 700)}, acts: [gearAct(200, (g, me, t) => { if (t && main(g, t) === 'Foxparks') g.mod(t, {ref: 'EBP01-019'}, 'eot'); })]};
 FX['EBP01-020'] = {onDeploy(g, me) { for (const p of g.pals(1 - me.owner)) if (!g.shielded(p, me.owner, me)) g.dmg(me, p, 1200); }, acts: [gearAct(200)]};
 FX['EBP01-021'] = {onDeploy: (g, me) => dmgPick(g, me, 500), acts: [gearAct(200)]};
 FX['EBP01-022'] = {acts: [gearAct(200, (g, me) => g.gainRes(me.owner, 'mat', 1))]};
@@ -1103,10 +1153,11 @@ FX['EBP01-041'] = {acts: [assignAct((g, me) => restPick(g, me.owner, me, x => co
   (g, me) => g.pals(1 - me.owner).filter(p => !p.rested && costOf(p) <= 6).length * 30 - 20, null, 'Rest 2 Pals')]};
 FX['EBP01-042'] = {onDeploy: (g, me) => g.draw(me.owner, 1)};
 FX['EBP01-043'] = {acts: [assignAct((g, me) => { g.draw(me.owner, 2); g.discardChoose(me.owner, 1); }, () => 55, null, 'Draw 2 discard 1')]};
-FX['EBP01-044'] = {acts: [{name: '+Power', cost: {restSelf: true}, run(g, me) {
+FX['EBP01-044'] = {grant: {act: {name: 'Fire rocket', cost: {restSelf: true}, run(g2, p) { const X = g2.power(p); for (const o of g2.pals(1 - p.owner)) if (!g2.shielded(o, p.owner, p)) g2.dmg(p, o, X); g2.toGrave(p, 'rocket'); },
+    ai: (g2, p) => g2.pals(1 - p.owner).filter(o => g2.power(o) <= g2.power(p)).length * 50 - g2.val(p) - 20}},
+  acts: [{name: '+Power', cost: {restSelf: true}, run(g, me) {
   const t = buffPick(g, me.owner, me, 0, 0, 1, false)[0]; if (!t) return;
-  if (main(g, t) === 'Pengullet') g.mod(t, {pw: 500, act: {name: 'Fire rocket', cost: {restSelf: true}, run(g2, p) { const X = g2.power(p); for (const o of g2.pals(1 - p.owner)) if (!g2.shielded(o, p.owner, p)) g2.dmg(p, o, X); g2.toGrave(p, 'rocket'); },
-    ai: (g2, p) => g2.pals(1 - p.owner).filter(o => g2.power(o) <= g2.power(p)).length * 50 - g2.val(p) - 20}}, 'eot');
+  if (main(g, t) === 'Pengullet') g.mod(t, {pw: 500, ref: 'EBP01-044'}, 'eot');
   else g.mod(t, {pw: 200}, 'eot'); }, ai: (g, me) => attackersReady(g, me.owner) ? 25 : -1}]};
 FX['EBP01-045'] = {acts: [gearAct(200, (g, me, t) => t && g.mod(t, {kw: ['Vigilance']}, 'eot'))]};
 const victorModes = [
@@ -1278,7 +1329,7 @@ FX['EBP02-067'] = {acts: [
   {name: 'Retrieve', key: 'b', once: true, cost: {soul: 2, assign: 1}, can: (g, me) => (me.under || []).length >= 2, run(g, me) { g.P(me.owner).hand.push(...me.under); me.under = []; }, ai: (g, me) => (me.under || []).length * 25 - 30}],
   onLeave(g, me) { if (me.under) g.P(me.owner).grave.push(...me.under); }};
 FX['EBP02-068'] = {onAllyDeploy(g, me, c) { if (main(g, c) === 'Lifmunk') buffPick(g, me.owner, me, 300, 0, 2, true); }, acts: [gearAct(200)]};
-FX['EBP02-069'] = {acts: [gearAct(200, (g, me, t) => t && g.mod(t, {onBattleKill: (g2, p) => g2.standSouls(p.owner, 2)}, 'eot'))]};
+FX['EBP02-069'] = {grant: {onBattleKill: (g2, p) => g2.standSouls(p.owner, 2)}, acts: [gearAct(200, (g, me, t) => t && g.mod(t, {ref: 'EBP02-069'}, 'eot'))]};
 FX['EBP02-070'] = {acts: [gearAct(300, (g, me) => { if (g.P(me.owner).souls >= 10) g.toGrave(me, 'Old Bow'); })]};
 FX['EBP02-071'] = {play(g, i) { const had = g.P(i).souls; g.soulUp(i, 10, false); if (had >= 10) g.standSouls(i, 10); }, ai: (g, i) => g.P(i).soulDeck * 20 + (g.P(i).souls >= 10 ? 60 : 0) - 40};
 FX['EBP02-072'] = {quick: true, play: (g, i, q) => { const t = g.pick(i, g.allPals(), {n: 1, score: x => x.owner !== i ? -50 : (q && q.tgt === x ? 100 : g.buffScore(x, 300)), src: g.evSrc(i)})[0]; if (t) g.mod(t, {pw: 300}, 'eot'); },
@@ -1543,6 +1594,88 @@ if (typeof module !== 'undefined' && module.exports) module.exports = api;
 root.PalAI = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 </script>
+<script id="js-tour">// Tournament simulation: round robin or Swiss, Bo1 or Bo3, 3/1/0 match points.
+// Each tournament is independent, so N tournaments can be split across Web Workers.
+(function (root) {
+'use strict';
+const SEARCH = {'search:3': 3, 'search:6': 6, 'search:12': 12};
+const AI_KINDS = ['greedy', 'search:3', 'search:6', 'search:12'];
+function policyMaker(kind) {
+  const r = SEARCH[kind];
+  return r ? () => root.PalAI.makeSearch({rollouts: r}) : () => root.PalAI.Greedy;
+}
+function rng(seed) {
+  let s = seed >>> 0;
+  return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+function shuffle(a, R) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+// expected number of matches in one tournament (for progress estimates)
+function matchCount(n, opts) { return opts.format === 'swiss' ? swissRounds(n, opts) * Math.floor(n / 2) : n * (n - 1) / 2; }
+function swissRounds(n, opts) { return Math.max(1, Math.min(n - 1, Math.floor(opts.rounds) || Math.ceil(Math.log2(n)))); }
+
+// entries: [{deck: [50 card ids], ai}]; opts: {format: 'rr'|'swiss', rounds, bo: 1|3}
+// yields once per game played; returns {order, P, matches}
+function* run(entries, opts, seed) {
+  const n = entries.length, R = rng(seed), bo = opts.bo === 3 ? 3 : 1, need = bo === 3 ? 2 : 1;
+  const pm = entries.map(e => policyMaker(e.ai));
+  const P = entries.map(() => ({pts: 0, mw: 0, ml: 0, md: 0, gw: 0, gl: 0, gd: 0, opp: [], bye: 0}));
+  const matches = [];
+  let gameSeed = seed | 0;
+
+  function* playMatch(a, b) {
+    let wa = 0, wb = 0, dr = 0, played = 0, first = R() < 0.5 ? 0 : 1;
+    while (wa < need && wb < need && played < bo) {
+      gameSeed = (gameSeed + 104729) | 0;
+      const g = root.PalEngine.Game.create(entries[a].deck, entries[b].deck, gameSeed, [pm[a](), pm[b]()], {firstPlayer: first, maxTurns: 40});
+      const w = g.run(); played++;
+      // the loser of a game goes first in the next one; after a draw the other player goes first
+      if (w === 0) { wa++; first = 1; } else if (w === 1) { wb++; first = 0; } else { dr++; first = 1 - first; }
+      yield 1;
+    }
+    const res = wa > wb ? 1 : wb > wa ? -1 : 0;
+    const A = P[a], B = P[b];
+    A.gw += wa; A.gl += wb; A.gd += dr; B.gw += wb; B.gl += wa; B.gd += dr;
+    A.opp.push(b); B.opp.push(a);
+    if (res > 0) { A.pts += 3; A.mw++; B.ml++; } else if (res < 0) { B.pts += 3; B.mw++; A.ml++; } else { A.pts++; B.pts++; A.md++; B.md++; }
+    matches.push([a, b, res]);
+  }
+
+  if (opts.format === 'swiss') {
+    const rounds = swissRounds(n, opts);
+    for (let r = 0; r < rounds; r++) {
+      // rank by points (random order within the same score), then pair top-down avoiding rematches
+      const order = shuffle([...Array(n).keys()], R).sort((x, y) => P[y].pts - P[x].pts);
+      if (n % 2) {
+        let k = order.length - 1; while (k > 0 && P[order[k]].bye) k--;
+        const b = order.splice(k, 1)[0]; P[b].bye++; P[b].pts += 3; P[b].mw++;
+      }
+      while (order.length) {
+        const a = order.shift();
+        let k = order.findIndex(x => !P[a].opp.includes(x)); if (k < 0) k = 0;
+        const b = order.splice(k, 1)[0];
+        yield* playMatch(a, b);
+      }
+    }
+  } else {
+    const pairs = [];
+    for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) pairs.push([a, b]);
+    for (const [a, b] of shuffle(pairs, R)) yield* playMatch(a, b);
+  }
+
+  // tiebreakers: match points, opponents' match-win % (min 1/3), game-win % (min 1/3), then random
+  const mwp = i => { const p = P[i], m = p.mw + p.ml + p.md; return m ? Math.max(1 / 3, p.pts / (3 * m)) : 1 / 3; };
+  const omw = i => P[i].opp.length ? P[i].opp.reduce((s, o) => s + mwp(o), 0) / P[i].opp.length : 0;
+  const gwp = i => { const p = P[i], g = p.gw + p.gl + p.gd; return g ? Math.max(1 / 3, (p.gw + p.gd / 3) / g) : 1 / 3; };
+  const tie = entries.map(() => R());
+  const order = [...Array(n).keys()].sort((x, y) => P[y].pts - P[x].pts || omw(y) - omw(x) || gwp(y) - gwp(x) || tie[y] - tie[x]);
+  return {order, P: P.map(({opp, ...rest}) => rest), matches};
+}
+
+const api = {run, AI_KINDS, matchCount, swissRounds};
+if (typeof module !== 'undefined' && module.exports) module.exports = api;
+root.PalTour = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+</script>
 <script id="js-app">{
 const PE = window.PalEngine, AI = window.PalAI, FX = window.PalFX.FX;
 const $ = s => document.querySelector(s);
@@ -1562,11 +1695,17 @@ function trial(pfx, extras, name) {
   return {id: 'preset-' + pfx, name, cards: m, preset: true};
 }
 const PRESETS = () => [
-  {id: 'preset-bp-control', name: 'Blue・Purple control (optimized)', cards: {"EBP02-083": 2, "EBP02-085": 3, "EBP02-040": 2, "EBP01-046": 2, "EBP01-027": 3, "EBP01-028": 4, "EBP01-082": 2, "EBP02-089": 1, "EBP02-099": 4, "EBP01-029": 1, "EBP02-047": 1, "EBP02-033": 3, "EBP02-032": 4, "EBP01-030": 4, "EBP02-094": 4, "EBP01-091": 1, "ETD02-021": 2, "EBP01-095": 1, "EBP01-026": 2, "EBP01-096": 2, "ETD01-015": 2}, preset: true},
   trial('ETD01', ['ETD01-008', 'ETD01-011'], 'Trial Deck Red・Blue (approx.)'),
   trial('ETD02', ['ETD02-008', 'ETD02-021'], 'Trial Deck Green・Purple (approx.)'),
-  autoDeck({id: 'preset-auto-rp', name: 'Sample Red・Purple (auto)', cards: {}, preset: true}, ['Red', 'Purple'], 11),
-  autoDeck({id: 'preset-auto-bg', name: 'Sample Blue・Green (auto)', cards: {}, preset: true}, ['Blue', 'Green'], 7)
+  // tournament top 8 (decklists as published)
+  {id: "preset-top8-1", name: "#1 Aldrin – Purple・Green (6-1)", cards: {"EBP02-059": 4, "ETD02-004": 4, "EBP01-098": 4, "EBP01-049": 4, "EBP01-051": 4, "ESS01-005": 4, "EBP01-052": 4, "ETD02-021": 4, "EBP01-076": 4, "EBP01-095": 4, "EBP02-062": 3, "EBP02-099": 3, "EBP01-070": 3, "EBP01-085": 1}, preset: true},
+  {id: "preset-top8-2", name: "#2 nande – Blue・Purple Chillet (5-2)", cards: {"EBP02-036": 4, "EBP01-025": 4, "ESS01-002": 4, "EBP01-098": 4, "ETD01-012": 4, "EBP01-028": 4, "EBP01-044": 4, "ESS01-005": 4, "ETD01-016": 4, "EBP01-026": 4, "EBP01-095": 4, "EBP01-038": 3, "EBP02-033": 2, "EBP01-097": 1}, preset: true},
+  {id: "preset-top8-3", name: "#3 Jobbermann – Red・Blue Faleris (4-3)", cards: {"EBP01-038": 4, "EBP02-003": 4, "EBP02-019": 4, "ETD01-004": 4, "EBP01-006": 4, "EBP01-019": 4, "EBP01-005": 4, "EBP02-018": 4, "EBP02-043": 4, "EBP02-013": 3, "EBP01-047": 3, "ESS01-005": 3, "EBP02-009": 2, "EBP02-099": 2, "EBP02-046": 1}, preset: true},
+  {id: "preset-top8-4", name: "#4 Lukred – Red・Blue Faleris (5-2)", cards: {"EBP02-003": 4, "EBP02-019": 4, "ETD01-004": 4, "EBP01-006": 4, "ESS01-005": 4, "ETD01-016": 4, "EBP02-018": 4, "EBP02-043": 4, "EBP01-038": 3, "EBP01-019": 3, "EBP02-009": 2, "EBP01-023": 2, "EBP02-023": 2, "EBP01-047": 2, "EBP02-005": 2, "EBP01-005": 2}, preset: true},
+  {id: "preset-top8-5", name: "#5 Ignited – Blue・Green Sweepa (3-2)", cards: {"EBP02-034": 8, "ETD02-023": 4, "EBP02-036": 4, "ETD02-004": 4, "EBP01-032": 4, "EBP01-049": 4, "EBP01-028": 4, "ETD01-016": 4, "EBP01-052": 4, "EBP02-027": 4, "EBP02-048": 2, "EBP01-070": 2, "EBP02-045": 2}, preset: true},
+  {id: "preset-top8-6", name: "#6 LIKEOMGROFL – Red・Purple Furnace (3-2)", cards: {"EBP02-085": 4, "EBP02-016": 4, "ETD01-004": 4, "EBP02-012": 4, "EBP02-006": 4, "EBP01-015": 4, "EBP01-016": 4, "EBP02-077": 4, "ETD01-008": 4, "EBP01-076": 4, "EBP01-095": 4, "ETD02-017": 2, "EBP02-015": 2, "EBP02-021": 2}, preset: true},
+  {id: "preset-top8-7", name: "#7 Rahzgreez – Blue・Green Beegarde (3-2)", cards: {"EBP02-055": 4, "EBP02-036": 4, "ETD02-024": 4, "ETD02-004": 4, "EBP01-034": 4, "EBP01-049": 3, "EBP01-047": 3, "EBP02-066": 3, "ESS01-005": 3, "ETD01-016": 3, "ETD01-021": 3, "EBP01-061": 2, "EBP01-057": 2, "ETD02-003": 2, "EBP01-035": 2, "EBP01-028": 2, "EBP02-046": 2}, preset: true},
+  {id: "preset-top8-8", name: "#8 EMudkipz – Red・Blue Chillet (3-2)", cards: {"EBP01-025": 4, "EBP02-004": 4, "EBP01-098": 4, "ETD01-004": 4, "EBP02-012": 4, "EBP02-001": 4, "EBP01-026": 4, "ETD01-012": 3, "EBP01-012": 3, "EBP01-048": 2, "EBP02-036": 2, "ESS01-002": 2, "EBP02-008": 2, "EBP02-007": 2, "EBP01-017": 2, "EBP01-001": 2, "ESS01-005": 2}, preset: true}
 ];
 const deckList = d => Object.entries(d.cards).filter(([, n]) => n > 0).map(([id, n]) => ({id, n}));
 const deckIds = d => { const out = []; for (const {id, n} of deckList(d)) for (let k = 0; k < n; k++) out.push(id); return out; };
@@ -1645,7 +1784,7 @@ function saveDeck(d) {
 async function delDeckRemote(id) { if (!db) return; try { await db.collection('decks').doc(id).delete(); } catch (e) {} }
 
 // ---------- views ----------
-const views = ['simulate', 'decks', 'game'];
+const views = ['simulate', 'decks', 'game', 'tournament'];
 function route() {
   const v = views.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'simulate';
   for (const x of views) $('#v-' + x).classList.toggle('on', x === v);
@@ -1656,6 +1795,7 @@ window.addEventListener('hashchange', route);
 function fillSelects() {
   const opts = decks.map(d => `<option value="${esc(d.id)}">${esc(d.name)}${d.preset ? '' : ' ★'}</option>`).join('');
   for (const s of ['#dA', '#dB', '#dS', '#sA', '#sB']) { const el = $(s), v = el.value; el.innerHTML = opts; if (getDeck(v)) el.value = v; }
+  renderTour();
 }
 function deckChips(d) {
   const v = PE.validateDeck(deckList(d));
@@ -1671,13 +1811,21 @@ const WMAIN = `
 self.onmessage = function (e) {
   var m = e.data;
   if (m.cards) { PalEngine.setCards(m.cards, PalFX.FX); return; }
+  if (m.type === 'tour') {
+    for (var t = 0; t < m.count; t++) {
+      var it = PalTour.run(m.entries, m.opts, (m.seed + (m.start + t) * 7919) | 0), r;
+      while (!(r = it.next()).done) self.postMessage({prog: 1});
+      self.postMessage({tour: r.value});
+    }
+    self.postMessage({done: true}); return;
+  }
   var mk = function (p) { return p === 'search' ? function () { return PalAI.makeSearch({rollouts: m.ro}); } : function () { return PalAI.Greedy; }; };
   var st = PalAI.runMatch(m.A, m.B, m.n, mk(m.pa), mk(m.pb), m.seed, function (k) { self.postMessage({prog: 1}); }, {});
   self.postMessage({done: true, stats: JSON.parse(JSON.stringify(st))});
 };`;
 let workers = [];
 async function getWorkers(n) {
-  if (!srcTexts) srcTexts = ['js-engine', 'js-fx', 'js-ai'].map(id => document.getElementById(id).textContent);
+  if (!srcTexts) srcTexts = ['js-engine', 'js-fx', 'js-ai', 'js-tour'].map(id => document.getElementById(id).textContent);
   while (workers.length < n) {
     const url = URL.createObjectURL(new Blob([srcTexts.join('\n;\n') + WMAIN], {type: 'text/javascript'}));
     const w = new Worker(url); w.postMessage({cards: CARDS}); workers.push(w);
@@ -1840,15 +1988,169 @@ function implNotes() {
   <ul>${partial}<li>Choices inside effects (targets, cards to discard) are always made by the heuristic, even for the search AI; the search decides the main moves of the turn.</li><li>Hidden cards (the opponent's hand and deck) are reshuffled in every search rollout: the AI does not cheat.</li><li>Shadowbeak: the opponent chooses their own weakest Pal to send to the graveyard.</li><li>After 40 total turns the game is declared a draw.</li></ul>`;
 }
 
+// ---------- tournament ----------
+const TOUR = window.PalTour;
+const AI_LABEL = {greedy: 'Heuristic (fast)', 'search:3': 'Search · quick (3)', 'search:6': 'Search · normal (6)', 'search:12': 'Search · accurate (12)'};
+const AI_SHORT = {greedy: 'Heuristic', 'search:3': 'Search 3', 'search:6': 'Search 6', 'search:12': 'Search 12'};
+const AI_MS = {greedy: 1.5, 'search:3': 275, 'search:6': 490, 'search:12': 870}; // measured cost of one side of a game
+const TMAX = 10, TLS = 'palworld-sim-tour-v1', TNS = [10, 50, 100, 300, 1000];
+let tour = null, tRun = null;
+const top8Entries = () => decks.filter(d => /^preset-top8-/.test(d.id)).map(d => ({deck: d.id, ai: 'greedy'}));
+function tSave() { try { localStorage.setItem(TLS, JSON.stringify(tour)); } catch (e) {} }
+function tLoad() { // per-viewer convenience: the last tournament setup, validated field by field
+  let x = null; try { x = JSON.parse(localStorage.getItem(TLS) || 'null'); } catch (e) {}
+  const t = {entries: [], fmt: 'rr', rounds: 0, bo: 1, n: 50};
+  if (x && typeof x === 'object') {
+    if (Array.isArray(x.entries)) for (const e of x.entries.slice(0, TMAX)) if (e && typeof e.deck === 'string' && getDeck(e.deck)) t.entries.push({deck: e.deck, ai: TOUR.AI_KINDS.includes(e.ai) ? e.ai : 'greedy'});
+    if (x.fmt === 'swiss') t.fmt = 'swiss';
+    t.rounds = Math.min(9, Math.max(0, Math.floor(+x.rounds) || 0));
+    t.bo = x.bo === 3 ? 3 : 1;
+    if (TNS.includes(x.n)) t.n = x.n;
+    if (!Array.isArray(x.entries)) t.entries = top8Entries();
+  } else t.entries = top8Entries();
+  return t;
+}
+const tOpts = () => ({format: tour.fmt, rounds: tour.rounds, bo: tour.bo});
+const tWorkers = n => Math.max(1, Math.min(8, (navigator.hardwareConcurrency || 4) - 1, n));
+function fmtTime(s) { return s < 90 ? `${Math.max(1, Math.round(s))} s` : s < 5400 ? `${Math.round(s / 60)} min` : `${(s / 3600).toFixed(1)} h`; }
+function renderTour() {
+  if (!tour) return;
+  for (const e of tour.entries) if (!getDeck(e.deck)) e.deck = decks[0].id;
+  const opts = decks.map(d => `<option value="${esc(d.id)}">${esc(d.name)}${d.preset ? '' : ' ★'}</option>`).join('');
+  const aiOpts = TOUR.AI_KINDS.map(k => `<option value="${k}">${AI_LABEL[k]}</option>`).join('');
+  $('#tList').innerHTML = tour.entries.map((e, k) => `<div class="prow" data-k="${k}"><span class="num">${k + 1}</span>
+    <select class="dk" aria-label="Deck of participant ${k + 1}">${opts}</select><select class="ai" aria-label="AI of participant ${k + 1}">${aiOpts}</select>
+    <button class="sm" data-act="rm" aria-label="Remove participant ${k + 1}">✕</button><div class="chips">${deckChips(getDeck(e.deck))}</div></div>`).join('')
+    || '<p class="note">No participants yet: add at least 2 decks.</p>';
+  tour.entries.forEach((e, k) => { const r = $(`#tList .prow[data-k="${k}"]`); r.querySelector('.dk').value = e.deck; r.querySelector('.ai').value = e.ai; });
+  const n = tour.entries.length;
+  $('#tCount').textContent = `${n}/${TMAX}`;
+  $('#tAdd').disabled = n >= TMAX;
+  $('#tFmt').value = tour.fmt; $('#tBo').value = String(tour.bo); $('#tN').value = String(tour.n);
+  $('#tRounds').disabled = tour.fmt !== 'swiss'; $('#tRounds').max = String(Math.max(1, n - 1));
+  $('#tRounds').value = tour.fmt === 'swiss' && n >= 2 ? TOUR.swissRounds(n, tOpts()) : '';
+  if (n < 2) { $('#tEst').textContent = ''; return; }
+  const m = TOUR.matchCount(n, tOpts()), games = m * (tour.bo === 3 ? 2.5 : 1) * tour.n;
+  const perGame = 2 * tour.entries.reduce((s, e) => s + AI_MS[e.ai], 0) / n;
+  $('#tEst').textContent = `${m} matches per tournament · about ${Math.round(games).toLocaleString('en-US')} games in total · roughly ${fmtTime(games * perGame / 1000 / tWorkers(tour.n))} on this device.`;
+}
+function tEdit(e) {
+  const row = e.target.closest('.prow'); if (!row) return; const k = +row.dataset.k, en = tour.entries[k]; if (!en) return;
+  if (e.target.classList.contains('dk')) { if (getDeck(e.target.value)) en.deck = e.target.value; }
+  else if (e.target.classList.contains('ai')) { if (TOUR.AI_KINDS.includes(e.target.value)) en.ai = e.target.value; }
+  else if (e.type === 'click' && e.target.closest('[data-act="rm"]')) tour.entries.splice(k, 1);
+  else return;
+  tSave(); renderTour();
+}
+function newAgg(n) {
+  const z = () => Array(n).fill(0);
+  return {t: 0, games: 0, place: Array.from({length: n}, z), pts: z(), mw: z(), ml: z(), md: z(), gw: z(), gl: z(), gd: z(), bye: z(), h2h: Array.from({length: n}, () => Array.from({length: n}, () => [0, 0, 0]))};
+}
+function addTour(A, r) {
+  A.t++; r.order.forEach((i, pos) => A.place[i][pos]++);
+  r.P.forEach((p, i) => { for (const k of ['pts', 'mw', 'ml', 'md', 'gw', 'gl', 'gd', 'bye']) A[k][i] += p[k]; });
+  for (const [a, b, res] of r.matches) { const x = A.h2h[a][b], y = A.h2h[b][a]; if (res > 0) { x[0]++; y[1]++; } else if (res < 0) { x[1]++; y[0]++; } else { x[2]++; y[2]++; } }
+}
+const pct = (a, b) => b ? pctf(a / b) : '–';
+function showTour(A, info) {
+  const {labels, ais, n, opts, stopped} = info; const T = A.t;
+  if (!T) { $('#tRes').innerHTML = ''; return; }
+  const top = Math.ceil(n / 2);
+  const rows = [...Array(n).keys()].map(i => ({i, avg: A.place[i].reduce((s, c, p) => s + c * (p + 1), 0) / T, win: A.place[i][0] / T, topH: A.place[i].slice(0, top).reduce((s, c) => s + c, 0) / T}))
+    .sort((a, b) => a.avg - b.avg || b.win - a.win);
+  const rankOf = {}; rows.forEach((r, k) => rankOf[r.i] = k + 1);
+  const fmt = opts.format === 'swiss' ? `Swiss, ${TOUR.swissRounds(n, opts)} rounds` : 'round robin';
+  let h = `<h2 style="margin-top:26px">Average standings</h2><p class="note">${T} tournament${T > 1 ? 's' : ''} · ${n} decks · ${fmt} · best of ${opts.bo} · ${A.games.toLocaleString('en-US')} games${stopped ? ' · stopped early' : ''}</p>`;
+  h += '<div class="scroll"><table class="rank"><thead><tr><th>#</th><th>Deck</th><th class="n">Avg place</th><th class="n">Won</th><th class="n">Top ' + top + '</th><th class="n">Avg points</th><th class="n">Matches W-L-D</th><th class="n">Match win</th><th class="n">Game win</th><th>Places 1→' + n + '</th></tr></thead><tbody>';
+  for (const [k, r] of rows.entries()) {
+    const i = r.i, mt = A.mw[i] + A.ml[i] + A.md[i], gt = A.gw[i] + A.gl[i] + A.gd[i], mx = Math.max(...A.place[i]) || 1;
+    const dist = A.place[i].map((c, p) => `<i style="height:${Math.max(4, 100 * c / mx)}%;opacity:${c ? 1 : .25}" title="${p + 1}${['st', 'nd', 'rd'][p] || 'th'}: ${pctf(c / T)}"></i>`).join('');
+    h += `<tr><td class="pos">${k + 1}</td><td>${esc(labels[i])}<span class="aichip">${AI_SHORT[ais[i]]}</span></td><td class="n avgp">${r.avg.toFixed(2)}</td><td class="n">${pctf(r.win)}</td><td class="n">${pctf(r.topH)}</td><td class="n">${(A.pts[i] / T).toFixed(1)}</td>
+      <td class="n">${A.mw[i]}-${A.ml[i]}-${A.md[i]}${A.bye[i] ? ` <span class="note">(${A.bye[i]} bye)</span>` : ''}</td><td class="n">${pct(A.mw[i] + A.md[i] / 2, mt)}</td><td class="n">${pct(A.gw[i] + A.gd[i] / 2, gt)}</td><td><div class="dist" role="img" aria-label="Placement distribution">${dist}</div></td></tr>`;
+  }
+  h += '</tbody></table></div>';
+  h += `<h2 style="margin-top:26px">Head to head</h2><p class="note">Match win % of the row deck against the column deck (draws count half). Hover a cell for the W-L-D record.</p><div class="scroll"><table class="h2h"><thead><tr><th class="rl">Deck</th>${rows.map((r, k) => `<th title="${esc(labels[r.i])}">${k + 1}</th>`).join('')}</tr></thead><tbody>`;
+  for (const [k, r] of rows.entries()) {
+    h += `<tr><td class="rl">${k + 1}. ${esc(labels[r.i])}</td>`;
+    for (const c of rows) {
+      if (c.i === r.i) { h += '<td class="self">—</td>'; continue; }
+      const [w, l, d] = A.h2h[r.i][c.i], t = w + l + d;
+      if (!t) { h += '<td class="self">·</td>'; continue; }
+      const p = (w + d / 2) / t, a = Math.round(Math.min(1, Math.abs(p - 0.5) * 2) * 45);
+      h += `<td style="background:color-mix(in srgb, ${p >= .5 ? 'var(--green)' : 'var(--red)'} ${a}%, transparent)" title="${w}-${l}-${d}">${Math.round(100 * p)}</td>`;
+    }
+    h += '</tr>';
+  }
+  $('#tRes').innerHTML = h + '</tbody></table></div>';
+}
+async function runTour() {
+  if (running) { toast('A simulation is already running'); return; }
+  const E = tour.entries.map(e => ({d: getDeck(e.deck), ai: e.ai})).filter(e => e.d);
+  if (E.length < 2) { toast('Add at least 2 decks'); return; }
+  for (const e of E) { const v = PE.validateDeck(deckList(e.d)); if (!v.ok) { toast(`${e.d.name}: ${v.errs[0]}`); return; } }
+  const seen = {}, labels = E.map(e => { const dup = E.filter(x => x.d.id === e.d.id).length > 1; seen[e.d.id] = (seen[e.d.id] || 0) + 1; return e.d.name + (dup ? ` (${seen[e.d.id]})` : ''); });
+  const n = E.length, N = tour.n, opts = tOpts(), entries = E.map(e => ({deck: deckIds(e.d), ai: e.ai}));
+  const info = {labels, ais: E.map(e => e.ai), n, opts, stopped: false};
+  const est = TOUR.matchCount(n, opts) * (opts.bo === 3 ? 2.5 : 1) * N;
+  running = true; $('#tGo').disabled = true; $('#go').disabled = true; $('#tGo').textContent = 'Running…'; $('#tStop').hidden = false;
+  let A = newAgg(n), gDone = 0; const t0 = performance.now(), seed = Math.floor(Math.random() * 1e9);
+  const upd = () => {
+    const el = (performance.now() - t0) / 1000, f = Math.min(1, gDone / est);
+    $('#tPg').style.width = (100 * (A.t >= N ? 1 : f)) + '%';
+    $('#tEta').textContent = `${A.t}/${N} tournaments · ${gDone.toLocaleString('en-US')} games · ${el.toFixed(0)} s` + (A.t < N && f > 0.02 ? ` · about ${fmtTime(el / f * (1 - f))} left` : '');
+  };
+  let lastShow = 0; const onTour = r => { addTour(A, r); const now = performance.now(); if (now - lastShow > 700 || A.t === N) { lastShow = now; showTour(A, info); } };
+  let stopFns = [];
+  tRun = {stop() { info.stopped = true; workers.forEach(w => w.terminate()); workers = []; stopFns.forEach(f => f()); }};
+  const W = tWorkers(N); let ws = null;
+  try { ws = await getWorkers(W); } catch (e) { ws = null; }
+  if (ws) {
+    let wfail = false, start = 0;
+    await Promise.all(ws.map((w, k) => new Promise(res => {
+      const count = Math.floor(N / W) + (k < N % W ? 1 : 0), s0 = start; start += count;
+      if (!count) return res();
+      stopFns.push(res);
+      w.onerror = ev => { if (ev && ev.preventDefault) ev.preventDefault(); wfail = true; res(); };
+      w.onmessage = e => { const m = e.data; if (m.prog) { gDone++; A.games++; if (gDone % 25 === 0) upd(); } else if (m.tour) onTour(m.tour); else if (m.done) res(); };
+      w.postMessage({type: 'tour', entries, opts, start: s0, count, seed});
+    })));
+    if (wfail && !info.stopped) { workers.forEach(x => x.terminate()); workers = []; ws = null; A = newAgg(n); gDone = 0; toast('Workers unavailable: simulating in the page (slower)'); }
+  }
+  if (!ws && !info.stopped) { // fallback without Web Workers: same seeds, yielding to the page every few games
+    for (let t = 0; t < N && !info.stopped; t++) {
+      const it = TOUR.run(entries, opts, (seed + t * 7919) | 0); let r, k = 0;
+      while (!(r = it.next()).done) { gDone++; A.games++; if (++k % 3 === 0) { upd(); await new Promise(z => setTimeout(z, 0)); if (info.stopped) break; } }
+      if (r.done) onTour(r.value);
+    }
+  }
+  showTour(A, info); upd();
+  tRun = null; running = false; $('#tGo').disabled = false; $('#go').disabled = false; $('#tGo').textContent = 'Run tournaments'; $('#tStop').hidden = true;
+}
+function initTour() {
+  tour = tLoad();
+  $('#tAll').innerHTML = '<option value="">—</option>' + TOUR.AI_KINDS.map(k => `<option value="${k}">${AI_LABEL[k]}</option>`).join('');
+  $('#tList').addEventListener('change', tEdit); $('#tList').addEventListener('click', tEdit);
+  $('#tAdd').onclick = () => { if (tour.entries.length >= TMAX) return; const used = new Set(tour.entries.map(e => e.deck)); const d = decks.find(x => !used.has(x.id)) || decks[0]; tour.entries.push({deck: d.id, ai: 'greedy'}); tSave(); renderTour(); };
+  $('#tTop8').onclick = () => { tour.entries = top8Entries().concat(['preset-ETD01', 'preset-ETD02'].filter(getDeck).map(id => ({deck: id, ai: 'greedy'}))).slice(0, TMAX); tSave(); renderTour(); };
+  $('#tClear').onclick = () => { tour.entries = []; tSave(); renderTour(); };
+  $('#tAll').onchange = () => { const v = $('#tAll').value; if (TOUR.AI_KINDS.includes(v)) { tour.entries.forEach(e => e.ai = v); tSave(); renderTour(); } $('#tAll').value = ''; };
+  $('#tFmt').onchange = () => { tour.fmt = $('#tFmt').value === 'swiss' ? 'swiss' : 'rr'; tSave(); renderTour(); };
+  $('#tBo').onchange = () => { tour.bo = $('#tBo').value === '3' ? 3 : 1; tSave(); renderTour(); };
+  $('#tN').onchange = () => { const v = +$('#tN').value; if (TNS.includes(v)) tour.n = v; tSave(); renderTour(); };
+  $('#tRounds').onchange = () => { tour.rounds = Math.min(9, Math.max(1, Math.floor(+$('#tRounds').value) || 1)); tSave(); renderTour(); };
+  $('#tGo').onclick = runTour; $('#tStop').onclick = () => { if (tRun) tRun.stop(); };
+  renderTour();
+}
+
 // ---------- startup ----------
 async function start() {
   CARDS = JSON.parse(document.getElementById('cards-data').textContent);
   PE.setCards(CARDS, FX);
   ALL = CARDS.filter(c => c.kind !== 'Soul').sort((a, b) => ['ETD01', 'ETD02', 'EBP01', 'EBP02', 'ESS01'].indexOf(a.set) - ['ETD01', 'ETD02', 'EBP01', 'EBP02', 'ESS01'].indexOf(b.set) || a.id.localeCompare(b.id));
   decks = PRESETS().concat(lsLoad());
-  fillSelects(); $('#dA').value = 'preset-bp-control'; $('#dB').value = 'preset-ETD01'; $('#sA').value = 'preset-auto-rp'; $('#sB').value = 'preset-auto-bg';
+  fillSelects(); $('#dA').value = 'preset-top8-1'; $('#dB').value = 'preset-top8-2'; $('#sA').value = 'preset-top8-1'; $('#sB').value = 'preset-top8-2';
   editing = decks.find(d => !d.preset) || decks[0]; $('#dS').value = editing.id;
-  route(); renderSimDecks(); renderCardList(); renderDeck(); implNotes();
+  route(); renderSimDecks(); renderCardList(); renderDeck(); implNotes(); initTour();
   $('#go').onclick = simulate; $('#sGo').onclick = showGame;
   $('#dA').onchange = $('#dB').onchange = renderSimDecks;
   for (const s of ['#fq', '#fs', '#fc', '#fk']) $(s).addEventListener('input', renderCardList);
@@ -1863,7 +2165,7 @@ async function start() {
   $('#bImp').onclick = () => { ensureOwn(); const r = parseImport($('#io').value.slice(0, 20000)); editing.cards = r.cards; saveDeck(editing); renderDeck(); renderCardList(); renderSimDecks(); toast(r.bad.length ? `Not recognized: ${r.bad.slice(0, 3).join(', ')}` : 'Deck imported'); };
   $('#bCopy').onclick = async () => { try { await navigator.clipboard.writeText($('#io').value); toast('Copied'); } catch (e) { $('#io').select(); toast('Select and copy manually'); } };
   // sample computed on load: 40 quick heuristic games
-  setTimeout(async () => { const s = AI.runMatch(deckIds(getDeck('preset-bp-control')), deckIds(getDeck('preset-ETD01')), 40, () => AI.Greedy, () => AI.Greedy, 4242); showResults(mergeStats([JSON.parse(JSON.stringify(s))]), getDeck('preset-bp-control'), getDeck('preset-ETD01')); $('#eta').textContent = 'Sample: 40 games with the heuristic AI. Press Simulate to use the search AI.'; }, 50);
+  setTimeout(async () => { const s = AI.runMatch(deckIds(getDeck('preset-top8-1')), deckIds(getDeck('preset-top8-2')), 40, () => AI.Greedy, () => AI.Greedy, 4242); showResults(mergeStats([JSON.parse(JSON.stringify(s))]), getDeck('preset-top8-1'), getDeck('preset-top8-2')); $('#eta').textContent = 'Sample: 40 games with the heuristic AI. Press Simulate to use the search AI.'; }, 50);
   // online deck storage
   try {
     if (window.claude && window.claude.use) {

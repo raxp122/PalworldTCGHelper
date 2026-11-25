@@ -14,6 +14,8 @@ A deck simulator for the **Palworld OFFICIAL CARD GAME** (English edition). Buil
   - *Search AI*: short-horizon Monte Carlo search. It reshuffles hidden information in every rollout, so it never sees your hand or deck order.
 - **Match statistics**: win rates with a 95% margin of error, first-player advantage, how games end, and a per-card "impact" table (win rate when the card was played minus the deck's overall win rate).
 - **Single game viewer**: read a full game move by move.
+- **Tournament mode**: up to 10 decks, each with its own AI, round robin or Swiss, best of 1 or best of 3. It simulates N tournaments and shows the average standings, how often each deck wins or makes the top half, the distribution of placements and a head-to-head matrix.
+- **Sample decks**: the two Trial Decks plus the top 8 decklists from a recent tournament, ready to simulate or copy and edit.
 
 ## Usage
 
@@ -22,6 +24,7 @@ Open the page and use the three tabs:
 1. **Simulate**: pick deck A and deck B and the AI for each side, choose the number of games and press *Simulate*. Simulations run in Web Workers on several CPU cores.
 2. **Decks & cards**: create, duplicate and edit decks. Your decks are saved in your browser's `localStorage`. To share a list, use *Import / export text*, one card per line: `4 EBP01-006` or `4 Foxparks – Light of Courage`.
 3. **Single game**: play one game with a given random seed and read the log.
+4. **Tournament**: pick the participants and their AI, choose the format and the number of tournaments, then press *Run tournaments*. You can stop early and keep the results so far.
 
 The whole app is a single static file, `index.html`, with no dependencies and no build step. You can also download it and open it locally with a double click.
 
@@ -36,6 +39,8 @@ The whole app is a single static file, `index.html`, with no dependencies and no
 - The Trial Deck presets use **approximate** copy counts, because the official lists have not been published.
 
 The simulator is a tool for comparing decks, not a perfect model of human play. Use at least 300 games before drawing conclusions from the card impact table.
+
+Planned AI improvements are listed in [TODO.md](TODO.md).
 
 ## Support
 
