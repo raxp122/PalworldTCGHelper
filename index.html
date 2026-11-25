@@ -2115,9 +2115,10 @@ function renderTour() {
 }
 function tEdit(e) {
   const row = e.target.closest('.prow'); if (!row) return; const k = +row.dataset.k, en = tour.entries[k]; if (!en) return;
-  if (e.target.classList.contains('dk')) { if (getDeck(e.target.value)) en.deck = e.target.value; }
-  else if (e.target.classList.contains('ai')) { if (TOUR.AI_KINDS.includes(e.target.value)) en.ai = e.target.value; }
-  else if (e.type === 'click' && e.target.closest('[data-act="rm"]')) tour.entries.splice(k, 1);
+  // clicks only remove participants: re-rendering on a click would close a menu the user is opening
+  if (e.type === 'click') { if (e.target.closest('[data-act="rm"]')) tour.entries.splice(k, 1); else return; }
+  else if (e.target.classList.contains('dk')) { if (getDeck(e.target.value)) en.deck = e.target.value; else return; }
+  else if (e.target.classList.contains('ai')) { if (TOUR.AI_KINDS.includes(e.target.value)) en.ai = e.target.value; else return; }
   else return;
   tSave(); renderTour();
 }
