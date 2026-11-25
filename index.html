@@ -1475,10 +1475,15 @@ const Greedy = {
     return 0;
   },
   mainAction(g, i) {
-    const acts = g.legalActions(i); let best = null, bs = 0;
-    for (const a of acts) { const s = this.scoreAction(g, i, a); if (s > bs || (s === bs && best && a.t !== 'end' && false)) { bs = s; best = a; } }
-    return best && bs > 0 ? best : {t: 'end'};
+    // the state does not change while one decision is scored, so lethal estimates are cached for its duration
+    this._lc = new Map();
+    try {
+      const acts = g.legalActions(i); let best = null, bs = 0;
+      for (const a of acts) { const s = this.scoreAction(g, i, a); if (s > bs) { bs = s; best = a; } }
+      return best && bs > 0 ? best : {t: 'end'};
+    } finally { this._lc = null; }
   },
+  cached(key, f) { const c = this._lc; if (!c) return f(); if (!c.has(key)) c.set(key, f()); return c.get(key); },
   scorePlay(g, i, id) {
     const d = D(id), f = PE().FX[id] || {}, pl = g.P(i); const cost = g.cardCost(i, id);
     let s;
@@ -1524,7 +1529,7 @@ const Greedy = {
   lethal: true, defW: 300, defRaw: 0, defDeploy: 0,
   scoreAttack(g, i, a, tgtUid) {
     if (this.lethal !== false) {
-      const L = lethalNow(g, i);
+      const L = this.cached('L', () => lethalNow(g, i));
       if (this.lethal !== 'defense' && L.raw >= L.life && L.raw > 0 && g.attackTargets(a).includes('player')) {
         // lethal is on the board: send everything at the player, biggest hits first, and nothing else
         return tgtUid === 'player' ? 900 + Math.min(90, g.strike(a) * 10) : -1;
@@ -1533,7 +1538,8 @@ const Greedy = {
       if (this.lethal !== 'attack' && base > 0 && !g.hasKw(a, 'Vigilance')) {
         // attacking rests this Pal for the opponent's turn: do not walk into a lethal counter-attack
         const life = g.P(i).life, dm = this.defDeploy, rw = this.defRaw;
-        const before = lethalRisk(threatNext(g, i, null, dm), life, rw), after = lethalRisk(threatNext(g, i, a, dm), life, rw);
+        const before = lethalRisk(this.cached('T', () => threatNext(g, i, null, dm)), life, rw);
+        const after = lethalRisk(this.cached('T' + a.uid, () => threatNext(g, i, a, dm)), life, rw);
         if (after > before) base -= this.defW * (after - before);
       }
       return base;
@@ -2139,14 +2145,14 @@ function showGame() {
 function implNotes() {
   const partial = Object.entries(FX).filter(([, f]) => f.impl === 'partial').map(([id, f]) => `<li><b>${esc(PE.DB[id].name)}</b>: ${esc(f.note)}</li>`).join('');
   $('#implNotes').innerHTML = `<p>The engine follows the Comprehensive Rules ver. 1.01: turn phases, souls, assigning Pals to structures, blocks, the Quick step with Interrupt and Quick events, player damage cancelled by Lucky cards, the 5-Pal limit, Legendaries, night and every keyword. Effects are written card by card from the official English text.</p>
-  <ul>${partial}<li>The search AI decides the main moves of the turn, whether and with what to block, and whether to respond in the Quick step (Interrupt or Quick events). Choices inside effects (targets, cards to discard) and the mulligan are always made by the heuristic.</li><li>Hidden cards (the opponent's hand and deck) are reshuffled in every search rollout: the AI does not cheat.</li><li>Shadowbeak: the opponent chooses their own weakest Pal to send to the graveyard.</li><li>After 40 total turns the game is declared a draw.</li></ul>`;
+  <ul>${partial}<li>Both AIs detect lethal: when their attackers can get enough damage through the opponent's blockers and likely Interrupts, they attack the player with everything, and they avoid attacks that would expose them to a lethal counter-attack. Hidden cards are estimated from public information only.</li><li>The search AI decides the main moves of the turn, whether and with what to block, and whether to respond in the Quick step (Interrupt or Quick events). Choices inside effects (targets, cards to discard) and the mulligan are always made by the heuristic.</li><li>Hidden cards (the opponent's hand and deck) are reshuffled in every search rollout: the AI does not cheat.</li><li>Shadowbeak: the opponent chooses their own weakest Pal to send to the graveyard.</li><li>After 40 total turns the game is declared a draw.</li></ul>`;
 }
 
 // ---------- tournament ----------
 const TOUR = window.PalTour;
 const AI_LABEL = {greedy: 'Heuristic (fast)', 'search:3': 'Search · quick (3)', 'search:6': 'Search · normal (6)', 'search:12': 'Search · accurate (12)'};
 const AI_SHORT = {greedy: 'Heuristic', 'search:3': 'Search 3', 'search:6': 'Search 6', 'search:12': 'Search 12'};
-const AI_MS = {greedy: 1.5, 'search:3': 275, 'search:6': 490, 'search:12': 870}; // measured cost of one side of a game
+const AI_MS = {greedy: 1.9, 'search:3': 275, 'search:6': 490, 'search:12': 870}; // measured cost of one side of a game
 const TMAX = 10, TLS = 'palworld-sim-tour-v1', TNS = [10, 50, 100, 300, 1000];
 let tour = null, tRun = null;
 const top8Entries = () => decks.filter(d => /^preset-top8-/.test(d.id)).map(d => ({deck: d.id, ai: 'greedy'}));

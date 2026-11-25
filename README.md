@@ -10,7 +10,7 @@ A deck simulator for the **Palworld OFFICIAL CARD GAME** (English edition). Buil
 - **Rules engine** based on the Comprehensive Rules ver. 1.01: turn phases, souls, assigning Pals to structures, blocking, the Quick step with Interrupt and Quick events, player damage cancelled by Lucky cards, the 5-Pal limit, Legendaries, night and every keyword (Brave, Serious, Taunt, Stealth, Assault, Vigilance, Nocturnal, Retaliate, Breakthrough...).
 - **Deck builder** with deck legality checks (50 cards, max 4 copies per full card name, max 8 Lucky-icon cards, max 2 colors + Colorless), a cost curve, card search and filters, text import/export and a "Fill to 50" helper.
 - **Two AIs**:
-  - *Heuristic AI*: fast, a few milliseconds per game.
+  - *Heuristic AI*: fast, a few milliseconds per game. It spots lethal attacks (accounting for blockers, likely Interrupts and the Lucky cards left in the opponent's deck) and avoids attacks that expose it to a lethal counter-attack.
   - *Search AI*: short-horizon Monte Carlo search for its main moves, blocks and Quick-step responses (Interrupt and Quick events). It reshuffles hidden information in every rollout, so it never sees your hand or deck order.
 - **Match statistics**: win rates with a 95% margin of error, first-player advantage, how games end, and a per-card "impact" table (win rate when the card was played minus the deck's overall win rate).
 - **Single game viewer**: read a full game move by move.
