@@ -11,12 +11,16 @@ Simulated results are only as good as these players. Known weaknesses, roughly b
 ### 1. Decision coverage
 - [x] **Search decides blocks and Quick-step responses.** The battle is split into resumable steps (`battleBlock`, `battleQuick`, `battleDamage`); the Search AI plays out no block and its best blockers, and passing versus each Interrupt (paid with a soul or a discard) or defensive Quick event. Benchmark: search with these defensive decisions beats the previous search 54.2% ±3.1 (1,024 games, every top-8 pairing, alternating seats, 6 rollouts), at about the same speed.
 - [ ] Choices inside effects (`g.pick`: targets, discards, modes) are still made by the Greedy heuristics, even for the Search AI.
-- [ ] **Lethal detection is a stub** (`lethalFor` returns 0). Before attacking, compute whether the available attackers plus buffs can deal the opponent's remaining life through their possible blockers and Interrupts. Do the same in reverse to keep enough blockers back when the opponent threatens lethal.
+- [x] **Lethal detection** (`lethalNow`, `threatNext` in `js-ai`). The heuristic estimates the damage its attackers can push through the opponent's blockers and likely Interrupts. When that reaches the opponent's life, every Pal that can hit the player attacks the player. It also penalises attacks that would leave it open to a lethal counter-attack. Hidden cards are estimated from public counts only, and Lucky cards left in the deck lower the chance that each hit lands. Benchmarks:
+  - heuristic with it vs without: **51.5% ±0.8** (15,360 games); the attack part gives the gain, the defensive part is neutral (with a stronger penalty it hurt: 47.8%);
+  - search with it vs without: **49.6% ±3.1** (1,024 games), no measurable change;
+  - cost: about 3.7 ms per heuristic game instead of 3 ms (estimates are cached per decision).
+- [ ] Lethal follow-ups: count buffs that add Strike or Power on attack (Ragnahawk, gear, events in hand), consider killing a Taunt Pal to open the way to the player, and estimate the opponent's new attackers from their hand instead of ignoring them.
 - [ ] **Mulligan rule is trivial**: the AI redraws when the hand has no non-event card costing 3 or less (about 30% of hands). With the heuristic AI the rule makes no measurable difference: 'never mulligan', the current rule and two curve-based rules all score 50% ±1.7 against each other over 3,360 games each. Revisit once the search AI is stronger, scoring hands by curve, colors and key cards or with a few rollouts.
 
 ### 2. Evaluation function
 - [ ] **`evaluate` uses hand-picked weights** (life ×75, hand ×22, souls ×10, Material/Ingredient ×3...). Learn the weights from self-play: log positions with the final result and fit a logistic regression, then iterate.
-- [ ] **Lucky cards in the deck are ignored.** Player damage is cancelled when a Lucky card is revealed, so effective life depends on the Lucky cards left in the deck. Use expected life instead of raw life.
+- [ ] **Lucky cards in the deck are ignored by `evaluate`** (the lethal detection already accounts for them). Player damage is cancelled when a Lucky card is revealed, so effective life depends on the Lucky cards left in the deck. Use expected life instead of raw life.
 - [ ] **Engines are undervalued.** Structures, Material and Ingredient are scored by their immediate value only. That explains why structure and resource decks (for example the Red・Purple Furnace deck from the top 8) lose about 90% of their games in simulation despite a 3-2 tournament record. Give resources and engine structures a value based on their future output.
 - [ ] Add tempo terms: standing versus rested Pals, untapped blockers for the opponent's next turn, and cards that cannot attack next turn.
 

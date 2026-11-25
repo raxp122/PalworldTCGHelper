@@ -1408,7 +1408,60 @@ root.PalFX = api;
 const PE = () => root.PalEngine;
 const D = id => PE().DB[id];
 
-function lethalFor(g, i) { return 0; }
+// ---------- lethal detection ----------
+// Player damage of s mills the top s cards one at a time and is cancelled if a Lucky card comes up,
+// so a hit lands with probability P(no Lucky among the top s cards).
+function hitLands(deckLen, lucky, s) {
+  let p = 1;
+  for (let k = 0; k < s; k++) { const n = deckLen - k; if (n <= 0) break; p *= Math.max(0, (n - lucky) / n); }
+  return p;
+}
+// Damage that attacks of strike x.s get through: the defender blocks the biggest blockable hits,
+// then nullifies the biggest remaining ones with Interrupts. Returns raw and Lucky-adjusted damage.
+function pushThrough(atk, nBlock, nInt, deckLen, lucky) {
+  const blockable = atk.filter(x => !x.stealth).sort((a, b) => b.s - a.s);
+  const rest = blockable.slice(nBlock).concat(atk.filter(x => x.stealth)).sort((a, b) => b.s - a.s).slice(nInt);
+  let raw = 0, exp = 0;
+  for (const x of rest) { raw += x.s; exp += x.s * hitLands(deckLen, lucky, x.s); }
+  return {raw, exp};
+}
+const cantLoseLife = (g, i) => g.P(1 - i).base.some(c => g.fx(c).noOppLife);
+const hitOf = (g, p) => ({s: g.strike(p) * (g.fx(p).doubleBattle ? 2 : 1), stealth: g.hasKw(p, 'Stealth')});
+// Hidden cards of player o as seen by the opponent: the decklist minus public zones is hand + deck,
+// so only counts over that pool are used, never the order of the deck or which cards are in hand.
+function hiddenShare(g, o, test) {
+  const pl = g.P(o), pool = pl.hand.length + pl.deck.length; if (!pool) return 0;
+  let n = 0; for (const id of pl.hand) if (test(id)) n++; for (const id of pl.deck) if (test(id)) n++;
+  return n / pool;
+}
+// Can player i, attacking now with every Pal that can still hit the player, bring the opponent to 0 life?
+function lethalNow(g, i) {
+  const o = 1 - i, op = g.P(o);
+  if (cantLoseLife(g, o)) return {raw: 0, exp: 0, life: op.life};
+  const atk = g.pals(i).filter(p => g.canAttack(p) && g.attackTargets(p).includes('player')).map(p => hitOf(g, p));
+  const nBlock = g.pals(o).filter(p => !p.rested && !(p.cantBlockT && p.cantBlockT >= g.st.turn)).length;
+  const intShare = hiddenShare(g, o, id => D(id).kw.Interrupt);
+  const canPay = op.soulsStand >= 1 || op.hand.length >= 2;
+  const nInt = canPay ? Math.round(op.hand.length * intShare) : 0;
+  const lucky = hiddenShare(g, o, id => D(id).lucky) * op.deck.length;
+  return Object.assign(pushThrough(atk, nBlock, nInt, op.deck.length, lucky), {life: op.life});
+}
+// How much damage can the opponent push through next turn if player i ends the turn now
+// (optionally after resting Pal `without`, e.g. by attacking with it)?
+function threatNext(g, i, without, deployMargin) {
+  const o = 1 - i, me = g.P(i);
+  if (cantLoseLife(g, i)) return {raw: 0, exp: 0};
+  const atk = g.pals(o).filter(p => !(p.noStand > 0) && !(p.lockBy && g.byUid(p.lockBy))).map(p => hitOf(g, p));
+  // the opponent may deploy Pals that attack straight away
+  if (deployMargin && g.P(o).hand.length && g.pals(o).length < 5) atk.push({s: deployMargin, stealth: false});
+  const nBlock = g.pals(i).filter(p => p !== without && (!p.rested || g.hasKw(p, 'Vigilance')) && !(p.cantBlockT && p.cantBlockT > g.st.turn)).length
+    + (without && g.hasKw(without, 'Vigilance') ? 1 : 0);
+  const ints = me.hand.filter(id => D(id).kw.Interrupt).length;
+  const nInt = Math.min(ints, me.soulsStand + Math.max(0, me.hand.length - ints)); // paid with a soul or by discarding another card
+  let lucky = 0; for (const id of me.deck) if (D(id).lucky) lucky++;
+  return pushThrough(atk, nBlock, nInt, me.deck.length, lucky);
+}
+const lethalRisk = (t, life, rawW) => t.exp >= life ? 1 : t.raw >= life ? rawW : 0;
 
 const Greedy = {
   name: 'greedy',
@@ -1422,10 +1475,15 @@ const Greedy = {
     return 0;
   },
   mainAction(g, i) {
-    const acts = g.legalActions(i); let best = null, bs = 0;
-    for (const a of acts) { const s = this.scoreAction(g, i, a); if (s > bs || (s === bs && best && a.t !== 'end' && false)) { bs = s; best = a; } }
-    return best && bs > 0 ? best : {t: 'end'};
+    // the state does not change while one decision is scored, so lethal estimates are cached for its duration
+    this._lc = new Map();
+    try {
+      const acts = g.legalActions(i); let best = null, bs = 0;
+      for (const a of acts) { const s = this.scoreAction(g, i, a); if (s > bs) { bs = s; best = a; } }
+      return best && bs > 0 ? best : {t: 'end'};
+    } finally { this._lc = null; }
   },
+  cached(key, f) { const c = this._lc; if (!c) return f(); if (!c.has(key)) c.set(key, f()); return c.get(key); },
   scorePlay(g, i, id) {
     const d = D(id), f = PE().FX[id] || {}, pl = g.P(i); const cost = g.cardCost(i, id);
     let s;
@@ -1467,7 +1525,28 @@ const Greedy = {
     for (const t of g.attackTargets(p)) b = Math.max(b, this.scoreAttack(g, i, p, t === 'player' ? 'player' : t.uid));
     return b;
   },
+  // lethal detection; defense weights tuned by A/B tests against the heuristic without it (see TODO.md)
+  lethal: true, defW: 300, defRaw: 0, defDeploy: 0,
   scoreAttack(g, i, a, tgtUid) {
+    if (this.lethal !== false) {
+      const L = this.cached('L', () => lethalNow(g, i));
+      if (this.lethal !== 'defense' && L.raw >= L.life && L.raw > 0 && g.attackTargets(a).includes('player')) {
+        // lethal is on the board: send everything at the player, biggest hits first, and nothing else
+        return tgtUid === 'player' ? 900 + Math.min(90, g.strike(a) * 10) : -1;
+      }
+      let base = this.scoreAttackBase(g, i, a, tgtUid);
+      if (this.lethal !== 'attack' && base > 0 && !g.hasKw(a, 'Vigilance')) {
+        // attacking rests this Pal for the opponent's turn: do not walk into a lethal counter-attack
+        const life = g.P(i).life, dm = this.defDeploy, rw = this.defRaw;
+        const before = lethalRisk(this.cached('T', () => threatNext(g, i, null, dm)), life, rw);
+        const after = lethalRisk(this.cached('T' + a.uid, () => threatNext(g, i, a, dm)), life, rw);
+        if (after > before) base -= this.defW * (after - before);
+      }
+      return base;
+    }
+    return this.scoreAttackBase(g, i, a, tgtUid);
+  },
+  scoreAttackBase(g, i, a, tgtUid) {
     const o = 1 - i, pa = g.power(a), sa = g.strike(a), hp = pa - a.dmg;
     const stealth = g.hasKw(a, 'Stealth');
     let risk = 0;
@@ -1571,7 +1650,9 @@ function determinize(sim, i) {
 
 function makeSearch(opts) {
   const R = (opts && opts.rollouts) || 6, K = (opts && opts.width) || 7, depth = (opts && opts.depth) || 1;
-  const greedyPols = [Greedy, Greedy];
+  // opts.lethal === false: heuristics without lethal detection (kept for benchmarks)
+  const G = opts && opts.lethal === false ? Object.assign(Object.create(Greedy), {lethal: false}) : Greedy;
+  const greedyPols = [G, G];
   const defense = !(opts && opts.defense === false), KB = (opts && opts.blockWidth) || 4;
   // Plays one defensive option out on R determinized copies of the game: the battle is resumed with
   // the option applied, then the attacker finishes its turn and the defender plays its next turn (Greedy).
@@ -1593,12 +1674,12 @@ function makeSearch(opts) {
   }
   return {
     name: 'search',
-    mulligan: Greedy.mulligan,
+    mulligan: G.mulligan,
     block(g, o, a, t, blockers) {
-      if (!defense) return Greedy.block(g, o, a, t, blockers);
+      if (!defense) return G.block(g, o, a, t, blockers);
       // candidates: no block, the Greedy choice and the next best blockers by the Greedy score
-      const pick = Greedy.block(g, o, a, t, blockers);
-      const ranked = blockers.map(b => ({b, s: Greedy.block(g, o, a, t, [b]) ? 1 : 0, v: g.val(b)})).sort((x, y) => y.s - x.s || x.v - y.v).map(x => x.b);
+      const pick = G.block(g, o, a, t, blockers);
+      const ranked = blockers.map(b => ({b, s: G.block(g, o, a, t, [b]) ? 1 : 0, v: g.val(b)})).sort((x, y) => y.s - x.s || x.v - y.v).map(x => x.b);
       const cands = [null]; if (pick) cands.push(pick);
       for (const b of ranked) { if (cands.length >= KB + 1) break; if (!cands.includes(b)) cands.push(b); }
       let best = pick, bv = -Infinity;
@@ -1612,8 +1693,8 @@ function makeSearch(opts) {
       return best;
     },
     quick(g, o, a, t) {
-      if (!defense) return Greedy.quick(g, o, a, t);
-      const opts2 = Greedy.quickOptions(g, o);
+      if (!defense) return G.quick(g, o, a, t);
+      const opts2 = G.quickOptions(g, o);
       if (!opts2.length) return null;
       let best = null, bv = -Infinity;
       for (const q of [null, ...opts2]) {
@@ -1629,7 +1710,7 @@ function makeSearch(opts) {
     mainAction(g, i) {
       const acts = g.legalActions(i);
       if (acts.length <= 1) return {t: 'end'};
-      const scored = acts.map(a => ({a, s: Greedy.scoreAction(g, i, a)})).sort((x, y) => y.s - x.s);
+      const scored = acts.map(a => ({a, s: G.scoreAction(g, i, a)})).sort((x, y) => y.s - x.s);
       const cands = scored.filter(x => x.a.t !== 'end' && x.s > -200).slice(0, K).map(x => x.a);
       cands.push({t: 'end'});
       if (cands.length === 1) return cands[0];
@@ -2064,14 +2145,14 @@ function showGame() {
 function implNotes() {
   const partial = Object.entries(FX).filter(([, f]) => f.impl === 'partial').map(([id, f]) => `<li><b>${esc(PE.DB[id].name)}</b>: ${esc(f.note)}</li>`).join('');
   $('#implNotes').innerHTML = `<p>The engine follows the Comprehensive Rules ver. 1.01: turn phases, souls, assigning Pals to structures, blocks, the Quick step with Interrupt and Quick events, player damage cancelled by Lucky cards, the 5-Pal limit, Legendaries, night and every keyword. Effects are written card by card from the official English text.</p>
-  <ul>${partial}<li>The search AI decides the main moves of the turn, whether and with what to block, and whether to respond in the Quick step (Interrupt or Quick events). Choices inside effects (targets, cards to discard) and the mulligan are always made by the heuristic.</li><li>Hidden cards (the opponent's hand and deck) are reshuffled in every search rollout: the AI does not cheat.</li><li>Shadowbeak: the opponent chooses their own weakest Pal to send to the graveyard.</li><li>After 40 total turns the game is declared a draw.</li></ul>`;
+  <ul>${partial}<li>Both AIs detect lethal: when their attackers can get enough damage through the opponent's blockers and likely Interrupts, they attack the player with everything, and they avoid attacks that would expose them to a lethal counter-attack. Hidden cards are estimated from public information only.</li><li>The search AI decides the main moves of the turn, whether and with what to block, and whether to respond in the Quick step (Interrupt or Quick events). Choices inside effects (targets, cards to discard) and the mulligan are always made by the heuristic.</li><li>Hidden cards (the opponent's hand and deck) are reshuffled in every search rollout: the AI does not cheat.</li><li>Shadowbeak: the opponent chooses their own weakest Pal to send to the graveyard.</li><li>After 40 total turns the game is declared a draw.</li></ul>`;
 }
 
 // ---------- tournament ----------
 const TOUR = window.PalTour;
 const AI_LABEL = {greedy: 'Heuristic (fast)', 'search:3': 'Search · quick (3)', 'search:6': 'Search · normal (6)', 'search:12': 'Search · accurate (12)'};
 const AI_SHORT = {greedy: 'Heuristic', 'search:3': 'Search 3', 'search:6': 'Search 6', 'search:12': 'Search 12'};
-const AI_MS = {greedy: 1.5, 'search:3': 275, 'search:6': 490, 'search:12': 870}; // measured cost of one side of a game
+const AI_MS = {greedy: 1.9, 'search:3': 275, 'search:6': 490, 'search:12': 870}; // measured cost of one side of a game
 const TMAX = 10, TLS = 'palworld-sim-tour-v1', TNS = [10, 50, 100, 300, 1000];
 let tour = null, tRun = null;
 const top8Entries = () => decks.filter(d => /^preset-top8-/.test(d.id)).map(d => ({deck: d.id, ai: 'greedy'}));
