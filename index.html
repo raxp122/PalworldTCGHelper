@@ -356,7 +356,7 @@ class Game {
       pl.hand = pl.deck.splice(0, 5);
       if (this.pol[i].mulligan && this.pol[i].mulligan(this, i)) {
         pl.deck.push(...pl.hand); pl.hand = []; shuffle(st, pl.deck); pl.hand = pl.deck.splice(0, 5); pl.mull = true;
-        this.log(`${'AB'[i]} mulligans`);
+        this.log(`${'AB'[i]} mulligans: shuffles the whole hand back and draws 5 new cards`);
       }
     }
     st.active = st.first; st.turn = 0;
@@ -1971,7 +1971,7 @@ function showGame() {
     const lifeBy = []; let html = ''; let lastT = '';
     for (const l of logs) {
       const m = l.match(/^\[T(\d+) ([AB])\] (.*)$/); if (!m) continue;
-      if (m[1] !== lastT) { lastT = m[1]; const lf = m[3].match(/life (-?\d+)-(-?\d+)/); if (lf) lifeBy.push([+lf[1], +lf[2]]); html += `<div class="t">Turn ${m[1]} · ${m[2] === 'A' ? esc(A.name) : esc(B.name)} to play</div>`; }
+      if (m[1] !== lastT) { lastT = m[1]; const lf = m[3].match(/life (-?\d+)-(-?\d+)/); if (lf) lifeBy.push([+lf[1], +lf[2]]); html += m[1] === '0' ? '<div class="t">Before the game</div>' : `<div class="t">Turn ${m[1]} · ${m[2] === 'A' ? esc(A.name) : esc(B.name)} to play</div>`; }
       html += `<p class="${m[3].startsWith('  ') ? 'note' : m[2].toLowerCase()}">${esc(m[3].trim())}</p>`;
     }
     const w = g.st.winner; html += `<div class="t">${w < 0 ? 'Draw' : esc(w === 0 ? A.name : B.name) + ' wins'} (${esc(g.st.why)}) after ${g.st.turn} turns</div>`;

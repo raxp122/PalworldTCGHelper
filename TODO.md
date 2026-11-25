@@ -11,7 +11,7 @@ Simulated results are only as good as these players. Known weaknesses, roughly b
 ### 1. Decision coverage
 - [ ] **Search only decides main-phase actions.** Blocks, Quick-step responses (Interrupt and Quick events), mulligans and every choice inside an effect (`g.pick`: targets, discards, modes) are always made by the Greedy heuristics, even for the Search AI. Extend the search to blocks and Interrupt decisions first: these swing games the most.
 - [ ] **Lethal detection is a stub** (`lethalFor` returns 0). Before attacking, compute whether the available attackers plus buffs can deal the opponent's remaining life through their possible blockers and Interrupts. Do the same in reverse to keep enough blockers back when the opponent threatens lethal.
-- [ ] **Mulligan rule is trivial**: the AI keeps any hand with a non-event card costing 3 or less. Score hands by curve, colors and key cards, or decide with a few rollouts.
+- [ ] **Mulligan rule is trivial**: the AI redraws when the hand has no non-event card costing 3 or less (about 30% of hands). With the heuristic AI the rule makes no measurable difference: 'never mulligan', the current rule and two curve-based rules all score 50% ±1.7 against each other over 3,360 games each. Revisit once the search AI is stronger, scoring hands by curve, colors and key cards or with a few rollouts.
 
 ### 2. Evaluation function
 - [ ] **`evaluate` uses hand-picked weights** (life ×75, hand ×22, souls ×10, Material/Ingredient ×3...). Learn the weights from self-play: log positions with the final result and fit a logistic regression, then iterate.
