@@ -356,7 +356,7 @@ class Game {
       pl.hand = pl.deck.splice(0, 5);
       if (this.pol[i].mulligan && this.pol[i].mulligan(this, i)) {
         pl.deck.push(...pl.hand); pl.hand = []; shuffle(st, pl.deck); pl.hand = pl.deck.splice(0, 5); pl.mull = true;
-        this.log(`${'AB'[i]} mulligans`);
+        this.log(`${'AB'[i]} mulligans: shuffles the whole hand back and draws 5 new cards`);
       }
     }
     st.active = st.first; st.turn = 0;
@@ -809,29 +809,44 @@ class Game {
     if (st.over) { st.battle = null; return; }
     if (!this.inBase(a)) { st.battle = null; return; }
     if (t && !this.inBase(t)) { st.battle = null; this.endBattle(a); return; }
-    // Block
+    this.battleBlock(a, t);
+  }
+  // The rest of the battle is split into steps so that a cloned game can resume from a decision point
+  // (the search AI clones the game at the block and Quick-step decisions and plays each option out).
+  battleBlock(a, t) {
+    const st = this.st, o = 1 - a.owner;
     if (!this.hasKw(a, 'Stealth')) {
-      const blockers = this.pals(o).filter(p => !p.rested && p !== t && !(p.cantBlockT && p.cantBlockT >= st.turn));
+      const blockers = this.blockers(a, t);
       if (blockers.length) {
         const b = this.pol[o].block(this, o, a, t, blockers);
-        if (b) {
-          b.rested = true; t = b; st.battle.t = b.uid; this.log(`  ${this.nm(b)} blocks`);
-          const fb = this.fx(b); if (fb.onAttacked) fb.onAttacked(this, b, a);
-          this.check(); if (st.over) { st.battle = null; return; }
-        }
+        if (b) { t = this.applyBlock(a, b); if (st.over) { st.battle = null; return; } }
       }
     }
-    // Quick step (defender)
+    this.battleQuick(a, t);
+  }
+  blockers(a, t) { return this.pals(1 - a.owner).filter(p => !p.rested && p !== t && !(p.cantBlockT && p.cantBlockT >= this.st.turn)); }
+  applyBlock(a, b) {
+    b.rested = true; this.st.battle.t = b.uid; this.log(`  ${this.nm(b)} blocks`);
+    const fb = this.fx(b); if (fb.onAttacked) fb.onAttacked(this, b, a);
+    this.check();
+    return b;
+  }
+  // Quick step (defender): ask the defender's policy until it passes; skipAsk goes straight to damage
+  battleQuick(a, t, skipAsk) {
+    const st = this.st, o = 1 - a.owner;
     let guard = 0;
-    while (!st.over && guard++ < 6) {
+    while (!skipAsk && !st.over && guard++ < 6) {
+      if (st.battle.nul || !this.inBase(a)) break;
       const q = this.pol[o].quick(this, o, a, t);
       if (!q) break;
       this.doQuick(o, q, a, t);
       this.check();
-      if (st.battle.nul || !this.inBase(a)) break;
     }
     if (st.over) { st.battle = null; return; }
-    // Damage step
+    this.battleDamage(a, t);
+  }
+  battleDamage(a, t) {
+    const st = this.st, o = 1 - a.owner;
     if (!st.battle.nul && this.inBase(a) && (!t || this.inBase(t))) {
       const pa = this.power(a), dbl = this.fx(a).doubleBattle ? 2 : 1;
       if (!t) {
@@ -1491,6 +1506,19 @@ const Greedy = {
     }
     return best;
   },
+  // every legal Quick-step response of player o (Interrupt paid with a soul or a discard, defensive Quick events)
+  quickOptions(g, o) {
+    const pl = g.P(o), out = [], seen = new Set();
+    for (const id of pl.hand) {
+      if (seen.has(id)) continue; seen.add(id);
+      const d = D(id), f = PE().FX[id] || {};
+      if (d.kw.Interrupt) {
+        if (pl.soulsStand >= 1) out.push({id, kind: 'interrupt', pay: 'soul'});
+        if (pl.hand.length >= 2) out.push({id, kind: 'interrupt', pay: 'discard'});
+      } else if (d.kind === 'Event' && f.quick && f.defend && g.canPay(o, g.cardCost(o, id))) out.push({id, kind: 'event'});
+    }
+    return out;
+  },
   quick(g, o, a, t) {
     const pl = g.P(o); let best = null, bs = 50;
     const sa = g.strike(a) * (g.fx(a).doubleBattle ? 2 : 1), life = pl.life;
@@ -1544,9 +1572,60 @@ function determinize(sim, i) {
 function makeSearch(opts) {
   const R = (opts && opts.rollouts) || 6, K = (opts && opts.width) || 7, depth = (opts && opts.depth) || 1;
   const greedyPols = [Greedy, Greedy];
+  const defense = !(opts && opts.defense === false), KB = (opts && opts.blockWidth) || 4;
+  // Plays one defensive option out on R determinized copies of the game: the battle is resumed with
+  // the option applied, then the attacker finishes its turn and the defender plays its next turn (Greedy).
+  // Returns the average evaluation from the defender's (o) point of view.
+  function rolloutDefense(g, o, a, t, apply) {
+    const baseSeed = (g.st.seed ^ 0x2f6b1d3c) | 0; let tot = 0;
+    for (let r = 0; r < R; r++) {
+      const sim = g.clone(greedyPols, {maxTurns: g.st.maxTurns});
+      sim.st.seed = (baseSeed + r * 7919) | 0;
+      determinize(sim, o);
+      const A = sim.byUid(a.uid), T = t ? sim.byUid(t.uid) : null;
+      apply(sim, A, T);
+      sim.check();
+      if (!sim.st.over && sim.st.active === a.owner) sim.finishTurnFromMain();
+      for (let d = 0; d < depth && !sim.st.over; d++) sim.playTurn();
+      tot += evaluate(sim, o);
+    }
+    return tot / R;
+  }
   return {
     name: 'search',
-    mulligan: Greedy.mulligan, block: Greedy.block.bind(Greedy), quick: Greedy.quick.bind(Greedy),
+    mulligan: Greedy.mulligan,
+    block(g, o, a, t, blockers) {
+      if (!defense) return Greedy.block(g, o, a, t, blockers);
+      // candidates: no block, the Greedy choice and the next best blockers by the Greedy score
+      const pick = Greedy.block(g, o, a, t, blockers);
+      const ranked = blockers.map(b => ({b, s: Greedy.block(g, o, a, t, [b]) ? 1 : 0, v: g.val(b)})).sort((x, y) => y.s - x.s || x.v - y.v).map(x => x.b);
+      const cands = [null]; if (pick) cands.push(pick);
+      for (const b of ranked) { if (cands.length >= KB + 1) break; if (!cands.includes(b)) cands.push(b); }
+      let best = pick, bv = -Infinity;
+      for (const c of cands) {
+        const v = rolloutDefense(g, o, a, t, (sim, A, T) => {
+          if (c) { const B = sim.byUid(c.uid); T = sim.applyBlock(A, B); if (sim.st.over) { sim.st.battle = null; return; } }
+          sim.battleQuick(A, T);
+        });
+        if (v > bv) { bv = v; best = c; }
+      }
+      return best;
+    },
+    quick(g, o, a, t) {
+      if (!defense) return Greedy.quick(g, o, a, t);
+      const opts2 = Greedy.quickOptions(g, o);
+      if (!opts2.length) return null;
+      let best = null, bv = -Infinity;
+      for (const q of [null, ...opts2]) {
+        const v = rolloutDefense(g, o, a, t, (sim, A, T) => {
+          if (q) { sim.doQuick(o, q, A, T); sim.check(); if (sim.st.over) { sim.st.battle = null; return; } }
+          // after a response the defender may respond again (Greedy); after passing, go to damage
+          sim.battleQuick(A, T, !q);
+        });
+        if (v > bv) { bv = v; best = q; }
+      }
+      return best;
+    },
     mainAction(g, i) {
       const acts = g.legalActions(i);
       if (acts.length <= 1) return {t: 'end'};
@@ -1971,7 +2050,7 @@ function showGame() {
     const lifeBy = []; let html = ''; let lastT = '';
     for (const l of logs) {
       const m = l.match(/^\[T(\d+) ([AB])\] (.*)$/); if (!m) continue;
-      if (m[1] !== lastT) { lastT = m[1]; const lf = m[3].match(/life (-?\d+)-(-?\d+)/); if (lf) lifeBy.push([+lf[1], +lf[2]]); html += `<div class="t">Turn ${m[1]} · ${m[2] === 'A' ? esc(A.name) : esc(B.name)} to play</div>`; }
+      if (m[1] !== lastT) { lastT = m[1]; const lf = m[3].match(/life (-?\d+)-(-?\d+)/); if (lf) lifeBy.push([+lf[1], +lf[2]]); html += m[1] === '0' ? '<div class="t">Before the game</div>' : `<div class="t">Turn ${m[1]} · ${m[2] === 'A' ? esc(A.name) : esc(B.name)} to play</div>`; }
       html += `<p class="${m[3].startsWith('  ') ? 'note' : m[2].toLowerCase()}">${esc(m[3].trim())}</p>`;
     }
     const w = g.st.winner; html += `<div class="t">${w < 0 ? 'Draw' : esc(w === 0 ? A.name : B.name) + ' wins'} (${esc(g.st.why)}) after ${g.st.turn} turns</div>`;
@@ -1985,7 +2064,7 @@ function showGame() {
 function implNotes() {
   const partial = Object.entries(FX).filter(([, f]) => f.impl === 'partial').map(([id, f]) => `<li><b>${esc(PE.DB[id].name)}</b>: ${esc(f.note)}</li>`).join('');
   $('#implNotes').innerHTML = `<p>The engine follows the Comprehensive Rules ver. 1.01: turn phases, souls, assigning Pals to structures, blocks, the Quick step with Interrupt and Quick events, player damage cancelled by Lucky cards, the 5-Pal limit, Legendaries, night and every keyword. Effects are written card by card from the official English text.</p>
-  <ul>${partial}<li>Choices inside effects (targets, cards to discard) are always made by the heuristic, even for the search AI; the search decides the main moves of the turn.</li><li>Hidden cards (the opponent's hand and deck) are reshuffled in every search rollout: the AI does not cheat.</li><li>Shadowbeak: the opponent chooses their own weakest Pal to send to the graveyard.</li><li>After 40 total turns the game is declared a draw.</li></ul>`;
+  <ul>${partial}<li>The search AI decides the main moves of the turn, whether and with what to block, and whether to respond in the Quick step (Interrupt or Quick events). Choices inside effects (targets, cards to discard) and the mulligan are always made by the heuristic.</li><li>Hidden cards (the opponent's hand and deck) are reshuffled in every search rollout: the AI does not cheat.</li><li>Shadowbeak: the opponent chooses their own weakest Pal to send to the graveyard.</li><li>After 40 total turns the game is declared a draw.</li></ul>`;
 }
 
 // ---------- tournament ----------
@@ -2036,9 +2115,10 @@ function renderTour() {
 }
 function tEdit(e) {
   const row = e.target.closest('.prow'); if (!row) return; const k = +row.dataset.k, en = tour.entries[k]; if (!en) return;
-  if (e.target.classList.contains('dk')) { if (getDeck(e.target.value)) en.deck = e.target.value; }
-  else if (e.target.classList.contains('ai')) { if (TOUR.AI_KINDS.includes(e.target.value)) en.ai = e.target.value; }
-  else if (e.type === 'click' && e.target.closest('[data-act="rm"]')) tour.entries.splice(k, 1);
+  // clicks only remove participants: re-rendering on a click would close a menu the user is opening
+  if (e.type === 'click') { if (e.target.closest('[data-act="rm"]')) tour.entries.splice(k, 1); else return; }
+  else if (e.target.classList.contains('dk')) { if (getDeck(e.target.value)) en.deck = e.target.value; else return; }
+  else if (e.target.classList.contains('ai')) { if (TOUR.AI_KINDS.includes(e.target.value)) en.ai = e.target.value; else return; }
   else return;
   tSave(); renderTour();
 }
