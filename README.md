@@ -1,11 +1,46 @@
-# PalworldTCGHelper
-A tool to test new decks for the Palworld Trading Card Game.
+# Palworld TCG Helper
 
-Simulatore del Palworld OFFICIAL CARD GAME (versione inglese): tutte le 253 carte con effetto unico, motore fedele alle Comprehensive Rules ver. 1.01, deck builder e IA (euristica e a ricerca Monte Carlo) per far scontrare due mazzi per centinaia di partite.
+A deck simulator for the **Palworld OFFICIAL CARD GAME** (English edition). Build decks, then let two AIs play them against each other for hundreds of games to see which deck wins more often and which cards pull their weight.
 
-- `index.html` è l'intera applicazione in un solo file (dati delle carte, motore, effetti, IA e interfaccia inline). Si apre anche con doppio clic.
-- I mazzi creati vengono salvati nel `localStorage` del browser.
+**Try it:** https://raxp122.github.io/PalworldTCGHelper/
 
-Se ti è utile puoi offrirmi un caffè su [Ko-fi](https://ko-fi.com/raxp122) ☕
+## Features
 
-Progetto amatoriale non ufficiale, non affiliato con Pocketpair o Bushiroad.
+- **Every card with a unique effect**: all 253, from Trial Deck Red・Blue, Trial Deck Green・Purple, Dawn of Palpagos, Legends Awaken and Sleeve & Card Set Vol.1, using the official English card text.
+- **Rules engine** based on the Comprehensive Rules ver. 1.01: turn phases, souls, assigning Pals to structures, blocking, the Quick step with Interrupt and Quick events, player damage cancelled by Lucky cards, the 5-Pal limit, Legendaries, night and every keyword (Brave, Serious, Taunt, Stealth, Assault, Vigilance, Nocturnal, Retaliate, Breakthrough...).
+- **Deck builder** with deck legality checks (50 cards, max 4 copies per full card name, max 8 Lucky-icon cards, max 2 colors + Colorless), a cost curve, card search and filters, text import/export and a "Fill to 50" helper.
+- **Two AIs**:
+  - *Heuristic AI*: fast, a few milliseconds per game.
+  - *Search AI*: short-horizon Monte Carlo search. It reshuffles hidden information in every rollout, so it never sees your hand or deck order.
+- **Match statistics**: win rates with a 95% margin of error, first-player advantage, how games end, and a per-card "impact" table (win rate when the card was played minus the deck's overall win rate).
+- **Single game viewer**: read a full game move by move.
+
+## Usage
+
+Open the page and use the three tabs:
+
+1. **Simulate**: pick deck A and deck B and the AI for each side, choose the number of games and press *Simulate*. Simulations run in Web Workers on several CPU cores.
+2. **Decks & cards**: create, duplicate and edit decks. Your decks are saved in your browser's `localStorage`. To share a list, use *Import / export text*, one card per line: `4 EBP01-006` or `4 Foxparks – Light of Courage`.
+3. **Single game**: play one game with a given random seed and read the log.
+
+The whole app is a single static file, `index.html`, with no dependencies and no build step. You can also download it and open it locally with a double click.
+
+## Known simplifications
+
+- **Alarm Bell**: the obligation to attack is not enforced.
+- **Antique Dresser**: the first ability (declaring a card name) is not simulated.
+- **Aurora Guide**: the AI only uses it as a simple draw.
+- **Shadowbeak**: the opponent always sends their weakest Pal to the graveyard.
+- Choices inside effects (targets, discards) are always made by a heuristic, even for the Search AI.
+- Games are declared a draw after 40 total turns.
+- The Trial Deck presets use **approximate** copy counts, because the official lists have not been published.
+
+The simulator is a tool for comparing decks, not a perfect model of human play. Use at least 300 games before drawing conclusions from the card impact table.
+
+## Support
+
+If you find it useful, you can [buy me a coffee on Ko-fi](https://ko-fi.com/raxp122) ☕
+
+## Disclaimer
+
+Unofficial fan project, not affiliated with or endorsed by Pocketpair or Bushiroad. Palworld and all card names and texts belong to their respective owners.
