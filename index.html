@@ -547,7 +547,8 @@ class Game {
   deploy(i, id, o) {
     o = o || {};
     const pl = this.P(i), d = DB[id];
-    const c = {uid: this.st.uid++, id, owner: i, rested: !!o.rested, dmg: 0, mods: [], noStand: 0, lockBy: 0, onceT: {}, depT: this.st.turn};
+    // placed: check-timing counter at deployment, used by the 5-Pal limit (CR 11.5: the Pals placed last stay)
+    const c = {uid: this.st.uid++, id, owner: i, rested: !!o.rested, dmg: 0, mods: [], noStand: 0, lockBy: 0, onceT: {}, depT: this.st.turn, placed: this.st.checks || 0};
     pl.base.push(c);
     if (o.from) this.log(`  deploys ${d.name}${o.rested ? ' rested' : ''} from ${o.from}`);
     this.onDeployTriggers(c);
@@ -753,14 +754,19 @@ class Game {
         // duplicate Legendary
         const seen = {};
         for (const p of pals) if (this.hasKw(p, 'Legendary')) { if (seen[p.id]) { this.toGrave(p, 'duplicate Legendary'); changed = true; } else seen[p.id] = 1; }
+        // CR 11.5 overloaded Pals: keep up to the limit from the Pals placed last, then fill the remaining slots
+        // from the older ones; the player chooses which (here: highest value first)
         const pals2 = this.pals(i);
         if (pals2.length > pl.maxPals) {
-          const keep = pals2.slice().sort((a, b) => this.val(b) - this.val(a)).slice(0, pl.maxPals);
+          const now = this.st.checks || 0, byVal = (a, b) => this.val(b) - this.val(a);
+          const last = pals2.filter(p => p.placed === now).sort(byVal).slice(0, pl.maxPals);
+          const keep = last.concat(pals2.filter(p => p.placed !== now).sort(byVal).slice(0, pl.maxPals - last.length));
           for (const p of pals2) if (!keep.includes(p)) { this.toGrave(p, 'too many Pals'); changed = true; }
         }
       }
       if (!changed) break;
     }
+    st.checks = (st.checks || 0) + 1;
   }
 
   // ---------- Battle ----------
@@ -1198,8 +1204,9 @@ function furnaceDiscount(g, i) {
 FX['EBP01-017'] = {aura: (g, me, t) => t.owner === me.owner && D(t.id).isPal && D(t.id).color === 'Red' ? {pw: 200} : null,
   onAllyDeploy: (g, me, c) => { if (D(c.id).isPal && D(c.id).color === 'Red') g.gainRes(me.owner, 'mat', 1); }};
 FX['EBP01-018'] = {impl: 'partial', note: "Stands the Pals assigned this turn; the obligation to attack is not simulated",
-  acts: [assignAct((g, me) => { for (const p of g.pals(me.owner)) if (p.assignedT === g.st.turn) { p.rested = false; p.noAssign = Object.assign(p.noAssign || {}, {all: g.st.turn}); } },
-    (g, me) => g.pals(me.owner).filter(p => p.assignedT === g.st.turn).length >= 2 ? 60 : -1, {soul: 1}, 'Stand assigned')]};
+  acts: [Object.assign(assignAct((g, me) => { for (const p of g.pals(me.owner)) if (p.assignedT === g.st.turn) { p.rested = false; p.noAssign = Object.assign(p.noAssign || {}, {all: g.st.turn}); } },
+    // worth it once other Pals were assigned this turn: they all stand again (with the Pal assigned to the Bell)
+    (g, me) => g.pals(me.owner).some(p => p.assignedT === g.st.turn && p.rested) ? 55 : -1, {soul: 1}, 'Stand assigned'), {restand: true})]};
 FX['EBP01-019'] = {grant: {onAttack: (g2, a) => dmgPick(g2, a, 700)}, acts: [gearAct(200, (g, me, t) => { if (t && main(g, t) === 'Foxparks') g.mod(t, {ref: 'EBP01-019'}, 'eot'); })]};
 FX['EBP01-020'] = {onDeploy(g, me) { for (const p of g.pals(1 - me.owner)) if (!g.shielded(p, me.owner, me)) g.dmg(me, p, 1200); }, acts: [gearAct(200)]};
 FX['EBP01-021'] = {onDeploy: (g, me) => dmgPick(g, me, 500), acts: [gearAct(200)]};
@@ -1309,7 +1316,14 @@ FX['EBP01-087'] = {onDeploy: (g, me) => { if (g.isNight()) destroyPick(g, me.own
 FX['EBP01-088'] = {acts: [nightAct()], grantKw: (g, me, t) => D(t.id).isPal ? ['Nocturnal'] : null};
 FX['EBP01-089'] = {acts: [nightAct()], endTurn: (g, me) => { if (g.pals(me.owner).some(p => p.rested && g.hasKw(p, 'Nocturnal'))) g.draw(me.owner, 1); }};
 FX['EBP01-090'] = {acts: [{name: 'Revive', once: true, cost: {soul: 3, assign: 1}, can: (g, me) => g.P(me.owner).grave.some(isPal),
-  run: (g, me, ctx) => { const X = ctx.assigned[0] ? costOf(ctx.assigned[0]) + 2 : 0; g.fromGrave(me.owner, id => isPal(id) && costOf(id) <= X, 1, 'deployRested'); }, ai: (g, me) => g.pals(me.owner).length < 5 ? 40 : -1}]};
+  run: (g, me, ctx) => { const X = ctx.assigned[0] ? costOf(ctx.assigned[0]) + 2 : 0; g.fromGrave(me.owner, id => isPal(id) && costOf(id) <= X, 1, 'deployRested'); },
+  // value of the best Pal it can bring back (cost up to the assigned Pal's cost + 2)
+  ai(g, me) {
+    const i = me.owner; if (g.pals(i).length >= 5) return -1;
+    const X = Math.max(0, ...g.assignable(i, me).map(p => costOf(p) + 2));
+    const best = Math.max(0, ...g.P(i).grave.filter(id => isPal(id) && costOf(id) <= X).map(id => g.hval(id)));
+    return best ? Math.min(120, 20 + best * 0.45) : -1;
+  }}]};
 FX['EBP01-091'] = {onGrave: (g, me) => g.draw(me.owner, 1)};
 FX['EBP01-092'] = {acts: [{name: 'Capture', once: true, cost: {assign: 1}, run(g, me, ctx) { const p = ctx.assigned[0]; if (!p) return; const X = costOf(p) + 2; g.exile(p, me);
   const t = g.pick(me.owner, g.allPals().filter(x => costOf(x) <= X), {n: 1, score: x => g.removeScore(me.owner, x), src: me})[0]; if (t) g.exile(t, me); },
@@ -1384,7 +1398,9 @@ FX['EBP02-034'] = {onDeploy(g, me) { if (g.pals(me.owner).filter(p => ['Sweepa',
 FX['EBP02-039'] = {onDeploy(g, me) { const i = me.owner, x = antiqueX(g, i); g.deployFromHand(i, id => (isPal(id) || D(id).kind === 'Structure') && costOf(id) <= 6, x, {rested: true}); }};
 FX['EBP02-040'] = {aura: (g, me, t) => t.owner === me.owner && D(t.id).isPal && D(t.id).color === 'Blue' ? {pw: 200} : null,
   endTurn: (g, me) => { if (g.pals(me.owner).filter(p => D(p.id).color === 'Blue').length >= 3) g.draw(me.owner, 1); }};
-FX['EBP02-041'] = {acts: [assignAct((g, me, ctx) => { for (const p of ctx.assigned) g.mod(p, {shield: true}, 'oppNext'); }, (g, me) => g.pals(me.owner).some(p => !p.rested && g.val(p) > 200) ? 15 : -1, null, 'Protection')]};
+FX['EBP02-041'] = {acts: [assignAct((g, me, ctx) => { for (const p of ctx.assigned) g.mod(p, {shield: true}, 'oppNext'); }, (g, me) => { const o = 1 - me.owner; if (!g.pals(o).length) return -1;
+    // protects the most valuable Pal from attacks and effects during the opponent's next turn
+    const best = Math.max(0, ...g.assignable(me.owner, me).map(p => g.val(p))); return best > 200 ? 25 + best * 0.12 : -1; }, null, 'Protection')]};
 FX['EBP02-042'] = {onDeploy(g, me) { const t = g.pick(me.owner, g.allPals().filter(x => costOf(x) <= 3), {n: 1, upTo: true, score: x => x.owner === me.owner ? -10 : g.val(x), src: me})[0]; if (t) g.bounce(t); }};
 FX['EBP02-043'] = {onDeploy: (g, me) => restPick(g, me.owner, me, null, 1, false, true),
   acts: [gearAct(200, (g, me) => { if (g.pals(me.owner).some(p => costOf(p) >= 5)) g.draw(me.owner, 1); })]};
@@ -1411,7 +1427,7 @@ FX['EBP02-057'] = {onBattleKill(g, me) { const i = me.owner; const t = g.pick(i,
 FX['EBP02-058'] = {acts: [{name: '+500 / 1000 to structure', once: true, cost: {ing: 2}, run(g, me) { g.mod(me, {pw: 500}, 'eot'); const t = g.pick(me.owner, g.structs(1 - me.owner), {n: 1, upTo: true, score: s => g.killScore(me.owner, s, 1000), src: me})[0]; if (t) g.dmg(me, t, 1000); }, ai: (g, me) => Math.max(buffNeed(g, me, 500, 0), g.structs(1 - me.owner).length ? 25 : -1)}]};
 FX['EBP02-063'] = {acts: [{name: 'Deploy Mammorest', once: true, cost: {ing: 3}, can: (g, me) => handHas(g, me.owner, id => isPal(id) && D(id).main === 'Mammorest'), run: (g, me) => g.deployFromHand(me.owner, id => isPal(id) && D(id).main === 'Mammorest', 1), ai: () => 80}]};
 FX['EBP02-064'] = {acts: [assignAct((g, me) => { g.gainRes(me.owner, 'ing', 3); g.gainLife(me.owner, 1); g.draw(me.owner, 1); }, () => 75, {ing: 1}, 'Ingredients, life, draw')]};
-FX['EBP02-065'] = {acts: [{name: 'Cook', once: true, cost: {ing: 3, assign: 3}, run(g, me) { g.gainRes(me.owner, 'ing', 5); for (const p of g.pals(me.owner)) { p.rested = false; g.mod(p, {pw: 1000}, 'eot'); } }, ai: (g, me) => g.pals(me.owner).length >= 3 ? 70 : -1}]};
+FX['EBP02-065'] = {acts: [{name: 'Cook', once: true, restand: true, cost: {ing: 3, assign: 3}, run(g, me) { g.gainRes(me.owner, 'ing', 5); for (const p of g.pals(me.owner)) { p.rested = false; g.mod(p, {pw: 1000}, 'eot'); } }, ai: (g, me) => g.pals(me.owner).length >= 3 ? 70 : -1}]};
 FX['EBP02-066'] = {acts: [assignAct((g, me) => { g.draw(me.owner, 1); g.standSouls(me.owner, 1); }, () => 55, null, 'Draw + soul')]};
 FX['EBP02-067'] = {acts: [
   {name: 'Put under', key: 'a', once: true, cost: {}, run(g, me) { const pl = g.P(me.owner); const id = pl.deck.shift(); if (id) (me.under = me.under || []).push(id); if (!pl.deck.length) g.endGame(1 - me.owner, 'deck out'); }, ai: (g, me) => g.P(me.owner).deck.length > 12 ? 20 : -1},
@@ -1584,7 +1600,7 @@ const Greedy = {
     let s = act.ai ? act.ai(g, c) : 20;
     if (s <= 0) return -1;
     const cost = act.cost || {};
-    if (cost.assign) {
+    if (cost.assign && !act.restand) {  // restand: the ability stands the assigned Pals again
       const cands = g.assignable(i, c).sort((a, b) => g.assignCost(a) - g.assignCost(b));
       const n = cost.assign === 'X' ? 1 : cost.assign; let pen = 0;
       for (let k = 0; k < n && k < cands.length; k++) { const p = cands[k]; pen += (this.bestAttackScore(g, i, p) > 30 ? 45 : 8) + g.val(p) * 0.05 - (g.fx(p).preferAssign ? 60 : 0) - (g.fx(p).onAssign || D(p.id).kw.Serious ? 15 : 0); }
