@@ -21,7 +21,16 @@ Simulated results are only as good as these players. Known weaknesses, roughly b
 ### 2. Evaluation function
 - [ ] **`evaluate` uses hand-picked weights** (life ×75, hand ×22, souls ×10, Material/Ingredient ×3...). Learn the weights from self-play: log positions with the final result and fit a logistic regression, then iterate.
 - [ ] **Lucky cards in the deck are ignored by `evaluate`** (the lethal detection already accounts for them). Player damage is cancelled when a Lucky card is revealed, so effective life depends on the Lucky cards left in the deck. Use expected life instead of raw life.
-- [ ] **Engines are undervalued.** Structures, Material and Ingredient are scored by their immediate value only. That explains why structure and resource decks (for example the Red・Purple Furnace deck from the top 8) lose about 90% of their games in simulation despite a 3-2 tournament record. Give resources and engine structures a value based on their future output.
+- [ ] **Material and resource decks are still weak in simulation.** The Red・Purple Furnace deck from the top 8 (3-2 in the real event) went from 11.9% to 21% in the heuristic round robin after these fixes:
+  - burn planning (`burnPlan` in `js-fx`): Mounted Machine Gun and Mossanda Lux – Apex Grenadier now combine their damage to finish a Pal, and the gun spreads one barrage over several kills (effect damage wears off at the end of the turn, so partial damage only pays if it kills);
+  - Primitive Furnace spent all its Material on the gear discount even when no gear was played afterwards; it now discounts only when that makes a gear playable, by the amount needed;
+  - Improved Furnace spent 5 Material searching for a cost 8+ gear even when the deck had none.
+
+  With the Search AI on both sides it still wins only about 15% against #1, #2 and #5 (120 games). Tried without measurable effect:
+  - Interrupts valued on the same scale as `evaluate` and used more readily: 50.2% / 48.9% against the old rule;
+  - `evaluate` weighting Material by the Material sinks in the base and draw-engine structures by the Pals available to assign: 20/120 vs 17/120 wins.
+
+  Next ideas: plan Material over several turns, value Shroomer Noct's assign-and-stand loops, and compare with logs of real games of the deck.
 - [ ] Add tempo terms: standing versus rested Pals, untapped blockers for the opponent's next turn, and cards that cannot attack next turn.
 
 ### 3. Search algorithm

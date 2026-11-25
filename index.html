@@ -1049,6 +1049,50 @@ function modes(list) { // "Choose 1 of the following"
 }
 function modesScore(list) { return (g, i) => Math.max(...list.filter(m => !m.can || m.can(g, i)).map(m => m.score(g, i)), -1); }
 function bestEnemyKill(g, i, n, filter) { let b = -1; for (const t of g.pals(1 - i)) if (!filter || filter(t)) b = Math.max(b, g.killScore(i, t, n)); return b; }
+// Burn planning for Material decks. Effect damage wears off at the end of the turn, so partial damage only pays
+// if it kills. Two sources: Mounted Machine Gun (500 per Material, once per turn, needs a Pal to assign; each shot
+// can pick any Pal) and Mossanda Lux – Apex Grenadier (400 to up to 2 Pals per 2 Material, repeatable).
+// gunNow: the gun whose ability is being resolved (its once-per-turn flag is already set).
+// extra: Material already paid for the action being resolved.
+// Returns {kills: [{t, shots, acts}], mg: total gun shots, moss: Mossanda activations, mats, v} or null.
+const MG = 'EBP01-015', MOSS = 'EBP02-006';
+function burnPlan(g, i, extra, gunNow) {
+  const M = g.P(i).mat + (extra || 0); if (M < 1) return null;
+  const gun = gunNow || g.structs(i).find(s => s.id === MG && g.canAct(i, s, FX[MG].acts[0]));
+  const moss = g.pals(i).find(p => p.id === MOSS);
+  if (!gun && !moss) return null;
+  const bonus = 200 * g.P(i).base.filter(c => g.fx(c).redDmgBonus).length;
+  const perG = 500 + bonus, perM = 400 + bonus;
+  const targets = g.pals(1 - i).filter(t => !g.shielded(t, i, gun || moss) && g.power(t) - t.dmg > 0)
+    .map(t => ({t, rem: g.power(t) - t.dmg, val: g.val(t) + 20}));
+  let best = null;
+  const consider = p => { if (p.v > 0 && (!best || p.v > best.v)) best = p; };
+  // A: the gun alone kills as many Pals as the Material allows, best value per shot first
+  if (gun) {
+    let left = M, v = 0; const kills = [];
+    for (const x of targets.map(x => Object.assign({shots: Math.ceil(x.rem / perG)}, x)).sort((a, b) => b.val / b.shots - a.val / a.shots)) {
+      if (x.shots > left) continue;
+      left -= x.shots; v += x.val - 4 * x.shots; kills.push({t: x.t, shots: x.shots, acts: 0});
+    }
+    if (kills.length) consider({kills, mg: M - left, moss: 0, mats: M - left, v});
+  }
+  // B: one Pal finished by gun shots plus Mossanda activations
+  if (moss) for (const x of targets) {
+    for (let s = gun ? Math.min(M, Math.ceil(x.rem / perG)) : 0; s >= 0; s--) {
+      const acts = Math.ceil(Math.max(0, x.rem - s * perG) / perM), mats = s + 2 * acts;
+      if (mats > M) continue;
+      consider({kills: [{t: x.t, shots: s, acts}], mg: s, moss: acts, mats, v: x.val - 4 * mats});
+    }
+  }
+  return best;
+}
+// target of one Mossanda hit: the Pal the plan wants it on, else the best single-hit target
+function burnTarget(g, me, n, extra) {
+  const i = me.owner, p = burnPlan(g, i, extra);
+  const k = p && p.kills.find(x => x.acts && g.inBase(x.t));
+  if (k) return k.t;
+  return g.pick(i, g.allPals(), {n: 1, upTo: true, score: x => g.killScore(i, x, n), src: me})[0];
+}
 function bestEnemyRemove(g, i, filter) { let b = -1; for (const t of g.pals(1 - i)) if (!filter || filter(t)) b = Math.max(b, g.removeScore(i, t)); return b; }
 function countMain(g, i, name) { return g.pals(i).filter(p => main(g, p) === name).length; }
 function antiqueX(g, i) { return new Set(g.structs(i).filter(s => D(s.id).name.includes('Antique')).map(s => s.id)).size; }
@@ -1121,11 +1165,36 @@ FX['EBP01-007'] = {onDeploy: (g, me) => dmgPick(g, me, 1200, x => costOf(x) >= 7
 FX['EBP01-008'] = {onDeploy: (g, me) => dmgPick(g, me, 500, x => !x.rested)};
 FX['EBP01-010'] = {onAttack(g, me) { for (const p of g.pals(me.owner)) if (D(p.id).color === 'Red') g.mod(p, {pw: 500, st: 1}, 'eot'); }};
 FX['EBP01-012'] = {onDeploy: (g, me) => g.gainRes(me.owner, 'mat', 2)};
-FX['EBP01-015'] = {acts: [{name: 'Barrage', once: true, cost: {mat: 'X', assign: 1}, chooseX: (g, me) => Math.min(g.P(me.owner).mat, 4),
-  run(g, me, ctx) { for (let k = 0; k < ctx.x; k++) dmgPick(g, me, 500, null, 1, false); }, ai: (g, me) => g.P(me.owner).mat >= 2 ? bestEnemyKill(g, me.owner, 500 * Math.min(4, g.P(me.owner).mat)) - 20 : -1}]};
+FX['EBP01-015'] = {acts: [{name: 'Barrage', once: true, cost: {mat: 'X', assign: 1},
+  chooseX: (g, me) => { const p = burnPlan(g, me.owner, 0, me); return p && p.mg ? p.mg : Math.min(g.P(me.owner).mat, 4); },
+  run(g, me, ctx) {
+    // follow the plan made with the Material just paid; spare shots go to the best single-shot target
+    const p = burnPlan(g, me.owner, ctx.x, me), queue = [];
+    if (p) for (const k of p.kills) for (let n = 0; n < k.shots; n++) queue.push(k.t);
+    for (let k = 0; k < ctx.x; k++) {
+      let t = queue.shift(); while (t && !g.inBase(t)) t = queue.shift();
+      if (!t) t = g.pick(me.owner, g.allPals(), {n: 1, upTo: true, score: x => g.killScore(me.owner, x, 500), src: me})[0];
+      if (t) g.dmg(me, t, 500);
+    }
+  },
+  ai: (g, me) => { const p = burnPlan(g, me.owner); if (p && p.mg) return 55 + p.v * 0.3; return g.P(me.owner).mat >= 2 ? bestEnemyKill(g, me.owner, 500 * Math.min(4, g.P(me.owner).mat)) - 20 : -1; }}]};
 FX['EBP01-016'] = {acts: [assignAct((g, me) => { g.gainRes(me.owner, 'mat', 3); g.draw(me.owner, 1); }, () => 70, null, '3 Material + draw'),
-  {name: 'Gear discount', once: true, key: 'disc', cost: {mat: 'X'}, chooseX: (g, me) => g.P(me.owner).mat, run: (g, me, ctx) => { g.P(me.owner).gearDisc += ctx.x; },
-    ai(g, me) { const i = me.owner, pl = g.P(i); return pl.hand.some(id => D(id).kind === 'Gear' && costOf(id) > pl.soulsStand && costOf(id) - pl.mat <= pl.soulsStand) ? 50 : -1; }}]};
+  {name: 'Gear discount', once: true, key: 'disc', cost: {mat: 'X'}, chooseX: (g, me) => furnaceDiscount(g, me.owner) || 1,
+    run: (g, me, ctx) => { g.P(me.owner).gearDisc += ctx.x; },
+    // only when it makes a gear in hand playable right now, spending just the Material needed
+    ai(g, me) { return furnaceDiscount(g, me.owner) ? 50 : -1; }}]};
+// Material Primitive Furnace must spend so that the cheapest unaffordable gear in hand can be played this turn (0 = none)
+function furnaceDiscount(g, i) {
+  const pl = g.P(i); if (!g.pals(i).length) return 0;
+  let need = 0;
+  for (const id of pl.hand) {
+    if (D(id).kind !== 'Gear') continue;
+    const cost = g.cardCost(i, id), x = cost - pl.soulsStand; if (x <= 0) return 0; // something is already playable
+    // the discount cannot bring the cost to 0 or less
+    if (x <= pl.mat && cost - x >= 1 && (!need || x < need)) need = x;
+  }
+  return need;
+}
 FX['EBP01-017'] = {aura: (g, me, t) => t.owner === me.owner && D(t.id).isPal && D(t.id).color === 'Red' ? {pw: 200} : null,
   onAllyDeploy: (g, me, c) => { if (D(c.id).isPal && D(c.id).color === 'Red') g.gainRes(me.owner, 'mat', 1); }};
 FX['EBP01-018'] = {impl: 'partial', note: "Stands the Pals assigned this turn; the obligation to attack is not simulated",
@@ -1277,13 +1346,18 @@ FX['EBP02-003'] = {selfPw: (g, me) => 200 * g.gears(me.owner).length,
   onDeploy(g, me) { const i = me.owner, pl = g.P(i); const seen = new Set(); for (const id of pl.hand.slice()) if (D(id).kind === 'Gear' && costOf(id) >= 8 && !seen.has(id)) { seen.add(id); pl.hand.splice(pl.hand.indexOf(id), 1); g.deploy(i, id, {from: 'hand'}); } }};
 FX['EBP02-004'] = {onDeploy(g, me) { const i = me.owner, pl = g.P(i); const k = pl.hand.findIndex(id => isPal(id) && hasEl(id, 'Dragon')); if (k >= 0 && bestEnemyKill(g, i, 700) > 50) { pl.grave.push(pl.hand.splice(k, 1)[0]); dmgPick(g, me, 700, null, 1, false); } }};
 FX['EBP02-005'] = {doubleBattle: true};
-FX['EBP02-006'] = {acts: [{name: '2×400', cost: {mat: 2}, run: (g, me) => dmgPick(g, me, 400, null, 2), ai: (g, me) => Math.max(bestEnemyKill(g, me.owner, 400), bestEnemyKill(g, me.owner, 800) / 2) - 15}]};
+FX['EBP02-006'] = {acts: [{name: '2×400', cost: {mat: 2},
+  run(g, me) { const i = me.owner, t = burnTarget(g, me, 400, 2); if (t) g.dmg(me, t, 400);
+    const t2 = g.pick(i, g.allPals().filter(x => x !== t), {n: 1, upTo: true, score: x => g.killScore(i, x, 400), src: me})[0]; if (t2) g.dmg(me, t2, 400); },
+  ai: (g, me) => { const p = burnPlan(g, me.owner); if (p && p.moss && !p.mg) return 55 + p.v * 0.3;
+    return Math.max(bestEnemyKill(g, me.owner, 400), bestEnemyKill(g, me.owner, 800) / 2) - 15; }}]};
 FX['EBP02-007'] = {acts: [{name: '+2 Material', cost: {restSelf: true}, run: (g, me) => g.gainRes(me.owner, 'mat', 2), ai: (g, me) => g.P(1 - me.owner).base.length ? 10 : 20}]};
 FX['EBP02-008'] = {onDeploy: (g, me) => g.gainRes(me.owner, 'mat', 2)};
 FX['EBP02-009'] = {selfPw: (g, me) => 200 * g.gears(me.owner).length, onDeploy: (g, me) => g.lookTake(me.owner, 5, id => D(id).kind === 'Gear', 1, 'hand')};
 FX['EBP02-010'] = {onBattleKill(g, me) { if (g.st.battle && g.st.battle.a === me.uid) { me.rested = false; g.log('  Relaxaurus Lux stands'); } }};
 FX['EBP02-015'] = {acts: [assignAct((g, me) => { g.gainRes(me.owner, 'mat', 3); g.draw(me.owner, 1); }, () => 70, null, '3 Material + draw'),
-  {name: 'Search gear ◇8+', once: true, key: 'b', cost: {mat: 5}, run(g, me) { const pl = g.P(me.owner); const k = pl.deck.findIndex(id => D(id).kind === 'Gear' && costOf(id) >= 8); if (k >= 0) pl.hand.push(pl.deck.splice(k, 1)[0]); g.shuffleDeck(me.owner); }, ai: () => 45}]};
+  {name: 'Search gear ◇8+', once: true, key: 'b', cost: {mat: 5}, run(g, me) { const pl = g.P(me.owner); const k = pl.deck.findIndex(id => D(id).kind === 'Gear' && costOf(id) >= 8); if (k >= 0) pl.hand.push(pl.deck.splice(k, 1)[0]); g.shuffleDeck(me.owner); },
+    ai: (g, me) => g.P(me.owner).deck.some(id => D(id).kind === 'Gear' && costOf(id) >= 8) ? 45 : -1}]};
 FX['EBP02-016'] = {acts: [assignAct((g, me) => { g.gainRes(me.owner, 'mat', 3); g.draw(me.owner, 1); }, () => 70, null, '3 Material + draw')], endTurn: (g, me) => g.gainRes(me.owner, 'mat', 1)};
 FX['EBP02-017'] = {onOppAttack(g, me, a, t) { if (!t || t.owner !== me.owner || !D(t.id).isPal) return; if (1500 >= g.power(a) - a.dmg && g.val(a) > 120) { g.toGrave(me, 'Mine'); g.dmg(me, a, 1500); } }};
 FX['EBP02-018'] = {onDeploy: (g, me) => dmgPick(g, me, 1000, null, 3), acts: [{name: '+1 Strike', cost: {restSelf: true}, run: (g, me) => buffPick(g, me.owner, me, 0, 1, 1, false), ai: (g, me) => bestBuffNeed(g, me.owner, 0, 1)}]};
@@ -2145,7 +2219,7 @@ function showGame() {
 function implNotes() {
   const partial = Object.entries(FX).filter(([, f]) => f.impl === 'partial').map(([id, f]) => `<li><b>${esc(PE.DB[id].name)}</b>: ${esc(f.note)}</li>`).join('');
   $('#implNotes').innerHTML = `<p>The engine follows the Comprehensive Rules ver. 1.01: turn phases, souls, assigning Pals to structures, blocks, the Quick step with Interrupt and Quick events, player damage cancelled by Lucky cards, the 5-Pal limit, Legendaries, night and every keyword. Effects are written card by card from the official English text.</p>
-  <ul>${partial}<li>Both AIs detect lethal: when their attackers can get enough damage through the opponent's blockers and likely Interrupts, they attack the player with everything, and they avoid attacks that would expose them to a lethal counter-attack. Hidden cards are estimated from public information only.</li><li>The search AI decides the main moves of the turn, whether and with what to block, and whether to respond in the Quick step (Interrupt or Quick events). Choices inside effects (targets, cards to discard) and the mulligan are always made by the heuristic.</li><li>Hidden cards (the opponent's hand and deck) are reshuffled in every search rollout: the AI does not cheat.</li><li>Shadowbeak: the opponent chooses their own weakest Pal to send to the graveyard.</li><li>After 40 total turns the game is declared a draw.</li></ul>`;
+  <ul>${partial}<li>Both AIs detect lethal: when their attackers can get enough damage through the opponent's blockers and likely Interrupts, they attack the player with everything, and they avoid attacks that would expose them to a lethal counter-attack. Hidden cards are estimated from public information only.</li><li>Material decks: Mounted Machine Gun and Mossanda Lux – Apex Grenadier plan their damage together and only start when the total finishes a Pal, since effect damage wears off at the end of the turn.</li><li>The search AI decides the main moves of the turn, whether and with what to block, and whether to respond in the Quick step (Interrupt or Quick events). Choices inside effects (targets, cards to discard) and the mulligan are always made by the heuristic.</li><li>Hidden cards (the opponent's hand and deck) are reshuffled in every search rollout: the AI does not cheat.</li><li>Shadowbeak: the opponent chooses their own weakest Pal to send to the graveyard.</li><li>After 40 total turns the game is declared a draw.</li></ul>`;
 }
 
 // ---------- tournament ----------
