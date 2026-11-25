@@ -1562,11 +1562,17 @@ function trial(pfx, extras, name) {
   return {id: 'preset-' + pfx, name, cards: m, preset: true};
 }
 const PRESETS = () => [
-  {id: 'preset-bp-control', name: 'Blue・Purple control (optimized)', cards: {"EBP02-083": 2, "EBP02-085": 3, "EBP02-040": 2, "EBP01-046": 2, "EBP01-027": 3, "EBP01-028": 4, "EBP01-082": 2, "EBP02-089": 1, "EBP02-099": 4, "EBP01-029": 1, "EBP02-047": 1, "EBP02-033": 3, "EBP02-032": 4, "EBP01-030": 4, "EBP02-094": 4, "EBP01-091": 1, "ETD02-021": 2, "EBP01-095": 1, "EBP01-026": 2, "EBP01-096": 2, "ETD01-015": 2}, preset: true},
   trial('ETD01', ['ETD01-008', 'ETD01-011'], 'Trial Deck Red・Blue (approx.)'),
   trial('ETD02', ['ETD02-008', 'ETD02-021'], 'Trial Deck Green・Purple (approx.)'),
-  autoDeck({id: 'preset-auto-rp', name: 'Sample Red・Purple (auto)', cards: {}, preset: true}, ['Red', 'Purple'], 11),
-  autoDeck({id: 'preset-auto-bg', name: 'Sample Blue・Green (auto)', cards: {}, preset: true}, ['Blue', 'Green'], 7)
+  // tournament top 8 (decklists as published)
+  {id: "preset-top8-1", name: "#1 Aldrin – Purple・Green (6-1)", cards: {"EBP02-059": 4, "ETD02-004": 4, "EBP01-098": 4, "EBP01-049": 4, "EBP01-051": 4, "ESS01-005": 4, "EBP01-052": 4, "ETD02-021": 4, "EBP01-076": 4, "EBP01-095": 4, "EBP02-062": 3, "EBP02-099": 3, "EBP01-070": 3, "EBP01-085": 1}, preset: true},
+  {id: "preset-top8-2", name: "#2 nande – Blue・Purple Chillet (5-2)", cards: {"EBP02-036": 4, "EBP01-025": 4, "ESS01-002": 4, "EBP01-098": 4, "ETD01-012": 4, "EBP01-028": 4, "EBP01-044": 4, "ESS01-005": 4, "ETD01-016": 4, "EBP01-026": 4, "EBP01-095": 4, "EBP01-038": 3, "EBP02-033": 2, "EBP01-097": 1}, preset: true},
+  {id: "preset-top8-3", name: "#3 Jobbermann – Red・Blue Faleris (4-3)", cards: {"EBP01-038": 4, "EBP02-003": 4, "EBP02-019": 4, "ETD01-004": 4, "EBP01-006": 4, "EBP01-019": 4, "EBP01-005": 4, "EBP02-018": 4, "EBP02-043": 4, "EBP02-013": 3, "EBP01-047": 3, "ESS01-005": 3, "EBP02-009": 2, "EBP02-099": 2, "EBP02-046": 1}, preset: true},
+  {id: "preset-top8-4", name: "#4 Lukred – Red・Blue Faleris (5-2)", cards: {"EBP02-003": 4, "EBP02-019": 4, "ETD01-004": 4, "EBP01-006": 4, "ESS01-005": 4, "ETD01-016": 4, "EBP02-018": 4, "EBP02-043": 4, "EBP01-038": 3, "EBP01-019": 3, "EBP02-009": 2, "EBP01-023": 2, "EBP02-023": 2, "EBP01-047": 2, "EBP02-005": 2, "EBP01-005": 2}, preset: true},
+  {id: "preset-top8-5", name: "#5 Ignited – Blue・Green Sweepa (3-2)", cards: {"EBP02-034": 8, "ETD02-023": 4, "EBP02-036": 4, "ETD02-004": 4, "EBP01-032": 4, "EBP01-049": 4, "EBP01-028": 4, "ETD01-016": 4, "EBP01-052": 4, "EBP02-027": 4, "EBP02-048": 2, "EBP01-070": 2, "EBP02-045": 2}, preset: true},
+  {id: "preset-top8-6", name: "#6 LIKEOMGROFL – Red・Purple Furnace (3-2)", cards: {"EBP02-085": 4, "EBP02-016": 4, "ETD01-004": 4, "EBP02-012": 4, "EBP02-006": 4, "EBP01-015": 4, "EBP01-016": 4, "EBP02-077": 4, "ETD01-008": 4, "EBP01-076": 4, "EBP01-095": 4, "ETD02-017": 2, "EBP02-015": 2, "EBP02-021": 2}, preset: true},
+  {id: "preset-top8-7", name: "#7 Rahzgreez – Blue・Green Beegarde (3-2)", cards: {"EBP02-055": 4, "EBP02-036": 4, "ETD02-024": 4, "ETD02-004": 4, "EBP01-034": 4, "EBP01-049": 3, "EBP01-047": 3, "EBP02-066": 3, "ESS01-005": 3, "ETD01-016": 3, "ETD01-021": 3, "EBP01-061": 2, "EBP01-057": 2, "ETD02-003": 2, "EBP01-035": 2, "EBP01-028": 2, "EBP02-046": 2}, preset: true},
+  {id: "preset-top8-8", name: "#8 EMudkipz – Red・Blue Chillet (3-2)", cards: {"EBP01-025": 4, "EBP02-004": 4, "EBP01-098": 4, "ETD01-004": 4, "EBP02-012": 4, "EBP02-001": 4, "EBP01-026": 4, "ETD01-012": 3, "EBP01-012": 3, "EBP01-048": 2, "EBP02-036": 2, "ESS01-002": 2, "EBP02-008": 2, "EBP02-007": 2, "EBP01-017": 2, "EBP01-001": 2, "ESS01-005": 2}, preset: true}
 ];
 const deckList = d => Object.entries(d.cards).filter(([, n]) => n > 0).map(([id, n]) => ({id, n}));
 const deckIds = d => { const out = []; for (const {id, n} of deckList(d)) for (let k = 0; k < n; k++) out.push(id); return out; };
@@ -1846,7 +1852,7 @@ async function start() {
   PE.setCards(CARDS, FX);
   ALL = CARDS.filter(c => c.kind !== 'Soul').sort((a, b) => ['ETD01', 'ETD02', 'EBP01', 'EBP02', 'ESS01'].indexOf(a.set) - ['ETD01', 'ETD02', 'EBP01', 'EBP02', 'ESS01'].indexOf(b.set) || a.id.localeCompare(b.id));
   decks = PRESETS().concat(lsLoad());
-  fillSelects(); $('#dA').value = 'preset-bp-control'; $('#dB').value = 'preset-ETD01'; $('#sA').value = 'preset-auto-rp'; $('#sB').value = 'preset-auto-bg';
+  fillSelects(); $('#dA').value = 'preset-top8-1'; $('#dB').value = 'preset-top8-2'; $('#sA').value = 'preset-top8-1'; $('#sB').value = 'preset-top8-2';
   editing = decks.find(d => !d.preset) || decks[0]; $('#dS').value = editing.id;
   route(); renderSimDecks(); renderCardList(); renderDeck(); implNotes();
   $('#go').onclick = simulate; $('#sGo').onclick = showGame;
@@ -1863,7 +1869,7 @@ async function start() {
   $('#bImp').onclick = () => { ensureOwn(); const r = parseImport($('#io').value.slice(0, 20000)); editing.cards = r.cards; saveDeck(editing); renderDeck(); renderCardList(); renderSimDecks(); toast(r.bad.length ? `Not recognized: ${r.bad.slice(0, 3).join(', ')}` : 'Deck imported'); };
   $('#bCopy').onclick = async () => { try { await navigator.clipboard.writeText($('#io').value); toast('Copied'); } catch (e) { $('#io').select(); toast('Select and copy manually'); } };
   // sample computed on load: 40 quick heuristic games
-  setTimeout(async () => { const s = AI.runMatch(deckIds(getDeck('preset-bp-control')), deckIds(getDeck('preset-ETD01')), 40, () => AI.Greedy, () => AI.Greedy, 4242); showResults(mergeStats([JSON.parse(JSON.stringify(s))]), getDeck('preset-bp-control'), getDeck('preset-ETD01')); $('#eta').textContent = 'Sample: 40 games with the heuristic AI. Press Simulate to use the search AI.'; }, 50);
+  setTimeout(async () => { const s = AI.runMatch(deckIds(getDeck('preset-top8-1')), deckIds(getDeck('preset-top8-2')), 40, () => AI.Greedy, () => AI.Greedy, 4242); showResults(mergeStats([JSON.parse(JSON.stringify(s))]), getDeck('preset-top8-1'), getDeck('preset-top8-2')); $('#eta').textContent = 'Sample: 40 games with the heuristic AI. Press Simulate to use the search AI.'; }, 50);
   // online deck storage
   try {
     if (window.claude && window.claude.use) {

@@ -14,6 +14,7 @@ A deck simulator for the **Palworld OFFICIAL CARD GAME** (English edition). Buil
   - *Search AI*: short-horizon Monte Carlo search. It reshuffles hidden information in every rollout, so it never sees your hand or deck order.
 - **Match statistics**: win rates with a 95% margin of error, first-player advantage, how games end, and a per-card "impact" table (win rate when the card was played minus the deck's overall win rate).
 - **Single game viewer**: read a full game move by move.
+- **Sample decks**: the two Trial Decks plus the top 8 decklists from a recent tournament, ready to simulate or copy and edit.
 
 ## Usage
 
