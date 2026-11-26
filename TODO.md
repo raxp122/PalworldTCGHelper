@@ -2,7 +2,7 @@
 
 ## Rules audit
 
-Comprehensive Rules (`rules/`) checked against the engine, one mechanic at a time, with a scenario test for each (`tests/scenarios.js`, 32 scenarios).
+Comprehensive Rules (`rules/`) checked against the engine, one mechanic at a time, with a scenario test for each (`tests/scenarios.js`, 34 scenarios).
 
 - [x] Setup, mulligan, stand/draw/soul phases, paying 3 souls to draw (6, 7, 8.5)
 - [x] Attack targets, Assault, Taunt, blocks, Stealth, battle damage, structures, damage removed at end of turn (9, 7.6.3)
@@ -10,8 +10,16 @@ Comprehensive Rules (`rules/`) checked against the engine, one mechanic at a tim
 - [x] Interrupt (soul or discard), Brave, Serious, Vigilance, Nocturnal, Retaliate, Breakthrough, Legendary (12)
 - [x] Deck construction (6.1)
 - [x] **Fixed**: more than 5 Pals (11.5). The engine kept the 5 most valuable Pals and could discard the one just deployed; the rules keep the Pals placed last and let the player choose among the older ones.
-- [ ] Card by card: check each card's effect against its text, group by group (by set and color), with a scenario for the non-trivial ones.
-- [ ] 7.3.1 says the player going first "skips the draw phase"; the engine (and the Play Guide's usual reading) skips it only on their first turn. Confirm.
+- [x] **Fixed**: Pals destroyed together (10.8.4.1.2). A battle-kill trigger (Chillet – Final Frostneedle, Relaxaurus Lux, ...) fired only if its Pal happened to be removed second, and Breakthrough dealt no damage when the attacker died together with the Pal it killed.
+- [x] 7.3.1: the player going first skips only their first draw (decided: the usual reading).
+- [ ] Card by card, group by group (each card's effect against its text, a scenario for the non-trivial ones):
+  - [x] Block 1: the 74 cards of the top-8 decks. Two engine fixes (above) and AI target fixes: Foxparks' Harness and Pengullet Rocket Launcher now give their buff to a Foxparks / Pengullet; Jormuntide Ignis may pay its stand with any 2 cards (the AI still keeps a hand of 4).
+  - [ ] Block 2: the other cards of EBP01. Block 3: the other cards of EBP02. Block 4: Trial decks and ESS01.
+- Readings chosen where a text is ambiguous (to review):
+  - Chillet – Final Frostneedle and other "opposing combat Pal is put into the graveyard" triggers fire even if their Pal dies in the same damage.
+  - Zoe's Strategy (remove 5 resources): the AI removes Material first, then Ingredient.
+  - Aurora Guide: the AI never puts a card back on top (it is "up to 1").
+  - Mossanda Lux's Grenade Launcher: the AI always stands Mossanda Lux and returns the gear when it can.
 
 ## AI uses of mechanics (`tests/usage.js`)
 

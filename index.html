@@ -683,12 +683,14 @@ class Game {
     if (f.onGrave) this.trig(c, () => f.onGrave(this, c));
     for (const o of this.P(c.owner).base.slice()) { const fo = this.fx(o); if (fo.onAllyGrave) fo.onAllyGrave(this, o, c); }
     if (inBattle && b.t !== null && DB[c.id].isPal) {
-      const otherUid = b.a === c.uid ? b.t : b.a; const other = this.byUid(otherUid);
+      const otherUid = b.a === c.uid ? b.t : b.a; const other = this.byUid(otherUid) || (this._dying && this._dying.get(otherUid)) || null;
       if (this.hasKwSnap(c, 'Retaliate') && other) { this.log(`  Retaliate from ${this.nm(c)}`); this.toGrave(other, 'retaliate'); }
-      if (other && this.inBase(other)) {
+      if (other) {
         const fo = this.fx(other);
         if (fo.onBattleKill) this.trig(other, () => fo.onBattleKill(this, other, c));
         for (const m of other.mods) { const gm = this.grant(m); if (gm.onBattleKill) gm.onBattleKill(this, other, c); }
+      }
+      if (other && this.inBase(other)) {
         if (b.a === other.uid && this.hasKw(other, 'Breakthrough')) { const s = this.strike(other); this.log(`  Breakthrough: ${s} damage`); this.playerDamage(c.owner, s); }
       } else if (other && b.a === other.uid && c._kwSnapAtt && c._kwSnapAtt.Breakthrough) { this.playerDamage(c.owner, c._kwSnapAtt.st); }
     }
@@ -748,7 +750,10 @@ class Game {
         const d = DB[c.id]; if (!(d.isPal || d.kind === 'Structure')) continue;
         if (c.dmg > 0 && c.dmg >= this.power(c)) dead.push(c);
       }
+      // cards destroyed together still see each other's destruction (CR 10.8.4.1.2: last information on the base)
+      this._dying = new Map(dead.map(c => [c.uid, c]));
       for (const c of dead) { if (this.st.battle && (this.st.battle.a === c.uid || this.st.battle.t === c.uid)) c._kw = KW_LIST.filter(k => this.hasKw(c, k)); this.toGrave(c, 'lethal damage'); changed = true; }
+      this._dying = null;
       for (let i = 0; i < 2; i++) {
         const pals = this.pals(i), pl = this.P(i);
         // duplicate Legendary
@@ -1033,9 +1038,12 @@ function buffNeed(g, p, X, S) {
 function bestBuffNeed(g, i, X, S) { let b = -1; for (const p of g.pals(i)) b = Math.max(b, buffNeed(g, p, X, S)); return b; }
 // value of a buff for the AI: do I have a standing Pal that can attack?
 function attackersReady(g, i) { return g.pals(i).filter(p => !p.rested && g.st.active === i).length; }
-function gearAct(pw, extra, name) {
+function gearAct(pw, extra, name, prefer) { // prefer(g, t): extra target score, for gears that reward a main name
   return {name: name || `+${pw} Power`, cost: {restSelf: true},
-    run(g, me, ctx) { const t = buffPick(g, me.owner, me, pw, 0, 1, false)[0]; if (extra) extra(g, me, t); },
+    run(g, me, ctx) {
+      const t = g.pick(me.owner, g.allPals(), {n: 1, score: x => g.buffScore(x, pw) + (prefer && x.owner === me.owner ? prefer(g, x) : 0), src: me})[0];
+      if (t) g.mod(t, {pw, st: 0}, 'eot');
+      if (extra) extra(g, me, t); },
     ai(g, me) { return bestBuffNeed(g, me.owner, pw, 0) + (extra ? 8 : 0); }};
 }
 function assignAct(run, ai, extraCost, name) {
@@ -1161,7 +1169,7 @@ FX['ETD02-024'] = {onGrave: (g, me) => g.gainRes(me.owner, 'ing', 1)};
 // ======================= DAWN OF PALPAGOS — RED =======================
 FX['EBP01-001'] = {acts: [
   {name: 'Stand (③)', key: 'stand', once: true, cost: {soul: 3}, can: (g, me) => me.rested, run: (g, me) => { me.rested = false; }, ai: (g, me) => 45},
-  {name: 'Stand (discard 2)', key: 'stand', once: true, cost: {discard: 2}, can: (g, me) => me.rested && g.P(me.owner).hand.length >= 4, run: (g, me) => { me.rested = false; }, ai: (g, me) => 30}]};
+  {name: 'Stand (discard 2)', key: 'stand', once: true, cost: {discard: 2}, can: (g, me) => me.rested && g.P(me.owner).hand.length >= 2, run: (g, me) => { me.rested = false; }, ai: (g, me) => g.P(me.owner).hand.length >= 4 ? 30 : -1}]};
 FX['EBP01-002'] = {redDmgBonus: true, onDeploy: (g, me) => dmgPick(g, me, 700)};
 FX['EBP01-003'] = {aura: (g, me, t) => t !== me && t.owner === me.owner && D(t.id).isPal && D(t.id).color === 'Red' ? {pw: 300} : null};
 FX['EBP01-004'] = {endBattle(g, me) { const o = 1 - me.owner; if (g.pals(o).some(p => g.power(p) >= g.power(me))) g.bounce(me); }};
@@ -1207,7 +1215,7 @@ FX['EBP01-018'] = {impl: 'partial', note: "Stands the Pals assigned this turn; t
   acts: [Object.assign(assignAct((g, me) => { for (const p of g.pals(me.owner)) if (p.assignedT === g.st.turn) { p.rested = false; p.noAssign = Object.assign(p.noAssign || {}, {all: g.st.turn}); } },
     // worth it once other Pals were assigned this turn: they all stand again (with the Pal assigned to the Bell)
     (g, me) => g.pals(me.owner).some(p => p.assignedT === g.st.turn && p.rested) ? 55 : -1, {soul: 1}, 'Stand assigned'), {restand: true})]};
-FX['EBP01-019'] = {grant: {onAttack: (g2, a) => dmgPick(g2, a, 700)}, acts: [gearAct(200, (g, me, t) => { if (t && main(g, t) === 'Foxparks') g.mod(t, {ref: 'EBP01-019'}, 'eot'); })]};
+FX['EBP01-019'] = {grant: {onAttack: (g2, a) => dmgPick(g2, a, 700)}, acts: [gearAct(200, (g, me, t) => { if (t && main(g, t) === 'Foxparks') g.mod(t, {ref: 'EBP01-019'}, 'eot'); }, null, (g, t) => main(g, t) === 'Foxparks' && !t.rested ? 40 : 0)]};
 FX['EBP01-020'] = {onDeploy(g, me) { for (const p of g.pals(1 - me.owner)) if (!g.shielded(p, me.owner, me)) g.dmg(me, p, 1200); }, acts: [gearAct(200)]};
 FX['EBP01-021'] = {onDeploy: (g, me) => dmgPick(g, me, 500), acts: [gearAct(200)]};
 FX['EBP01-022'] = {acts: [gearAct(200, (g, me) => g.gainRes(me.owner, 'mat', 1))]};
@@ -1247,7 +1255,7 @@ FX['EBP01-043'] = {acts: [assignAct((g, me) => { g.draw(me.owner, 2); g.discardC
 FX['EBP01-044'] = {grant: {act: {name: 'Fire rocket', cost: {restSelf: true}, run(g2, p) { const X = g2.power(p); for (const o of g2.pals(1 - p.owner)) if (!g2.shielded(o, p.owner, p)) g2.dmg(p, o, X); g2.toGrave(p, 'rocket'); },
     ai: (g2, p) => g2.pals(1 - p.owner).filter(o => g2.power(o) <= g2.power(p)).length * 50 - g2.val(p) - 20}},
   acts: [{name: '+Power', cost: {restSelf: true}, run(g, me) {
-  const t = buffPick(g, me.owner, me, 0, 0, 1, false)[0]; if (!t) return;
+  const t = g.pick(me.owner, g.allPals(), {n: 1, score: x => g.buffScore(x, 200) + (x.owner === me.owner && main(g, x) === 'Pengullet' ? 40 : 0), src: me})[0]; if (!t) return;
   if (main(g, t) === 'Pengullet') g.mod(t, {pw: 500, ref: 'EBP01-044'}, 'eot');
   else g.mod(t, {pw: 200}, 'eot'); }, ai: (g, me) => attackersReady(g, me.owner) ? 25 : -1}]};
 FX['EBP01-045'] = {acts: [gearAct(200, (g, me, t) => t && g.mod(t, {kw: ['Vigilance']}, 'eot'))]};
