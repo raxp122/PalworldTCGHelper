@@ -227,6 +227,21 @@ T('12.14 Breakthrough: killing the opposing combat Pal also deals strike damage 
   g.attack(a, t.uid);
   assert.ok(!g.inBase(t)); assert.strictEqual(B.life, 10 - g.strike(a));
 });
+T('10.8.4.1.2 Breakthrough still hits when the attacker dies together with the blocker it kills', () => {
+  const {g, place, B} = position();
+  const a = place(0, BREAK), t = place(1, BREAK, true);
+  g.attack(a, t.uid);
+  assert.ok(!g.inBase(a) && !g.inBase(t)); assert.strictEqual(B.life, 7);
+});
+T('10.8.4.1.2 Chillet – Final Frostneedle draws even when it dies together with its opponent (both seats)', () => {
+  const CHILLET = 'ESS01-002';
+  const {g, place, A, B} = position();
+  const a = place(0, CHILLET), t = place(1, CHILLET, true);
+  const ha = A.hand.length, hb = B.hand.length;
+  g.attack(a, t.uid);
+  assert.ok(!g.inBase(a) && !g.inBase(t));
+  assert.strictEqual(A.hand.length, ha + 1, 'attacker draws'); assert.strictEqual(B.hand.length, hb + 1, 'defender draws');
+});
 T('11.5 more than 5 Pals: the Pal placed last stays, the weakest older Pal goes', () => {
   const {g, place, B} = position({active: 1});
   const old = [VAN, VAN, VAN, VAN, SMALL].map(id => place(1, id));
